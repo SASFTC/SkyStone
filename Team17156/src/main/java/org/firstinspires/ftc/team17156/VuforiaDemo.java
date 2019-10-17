@@ -2,6 +2,7 @@ package org.firstinspires.ftc.team17156;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.vuforia.HINT;
 import com.vuforia.Vuforia;
 
@@ -20,7 +21,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
  * This OpMode was written for the VuforiaDemo Basics video. This demonstrates basic principles of
  * using VuforiaDemo in FTC.
  */
-@Autonomous(name = "Vuforia")
+@TeleOp(name="Basic: Iterative OpMode", group="Iterative Opmode")
 public class VuforiaDemo extends LinearOpMode
 {
     // Variables to be used for later
