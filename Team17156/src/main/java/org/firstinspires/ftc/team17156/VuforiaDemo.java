@@ -89,8 +89,8 @@ public class VuforiaDemo extends LinearOpMode
 
         // These are the vision targets that we want to use
         // The string needs to be the name of the appropriate .xml file in the assets folder
-        visionTargets = vuforiaLocalizer.loadTrackablesFromAsset("FTC_2016-17");
-        Vuforia.setHint(HINT.HINT_MAX_SIMULTANEOUS_IMAGE_TARGETS, 4);
+        visionTargets = vuforiaLocalizer.loadTrackablesFromAsset("Skystone");
+        Vuforia.setHint(HINT.HINT_MAX_SIMULTANEOUS_IMAGE_TARGETS, 12);
 
         // Setup the target to be tracked
         target = visionTargets.get(0); // 0 corresponds to the wheels target
