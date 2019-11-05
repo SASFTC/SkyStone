@@ -34,6 +34,8 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.team17156.utils.control.Mecanum_DriveTrain;
+
 
 /**
  * This file contains an minimal example of a Linear "OpMode". An OpMode is a 'program' that runs in either
@@ -48,33 +50,25 @@ import com.qualcomm.robotcore.util.ElapsedTime;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@TeleOp(name="Basic: Mecanum Drive", group="Linear Opmode")
+@TeleOp(name="Experimental Mecanum Drive", group="Linear Opmode")
 //@Disabled
-public class BasicOpMode_Mecanum_Drive extends LinearOpMode {
+public class Experimental_Mecanum_Drive extends LinearOpMode {
 
     // Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime();
-    private DcMotor leftFront = null;
-    private DcMotor rightFront = null;
-    private DcMotor leftRear = null;
-    private DcMotor rightRear = null;
+    private Mecanum_DriveTrain driveTrain;
 
     @Override
     public void runOpMode() {
         telemetry.addData("Status", "Initialized");
         telemetry.update();
 
-        // Set motors.
-        leftFront  = hardwareMap.get(DcMotor.class, "left_front");
-        rightFront = hardwareMap.get(DcMotor.class, "right_front");
-        leftRear  = hardwareMap.get(DcMotor.class, "left_rear");
-        rightRear = hardwareMap.get(DcMotor.class, "right_rear");
-
-        // Set motor directions.
-        leftFront.setDirection(DcMotor.Direction.REVERSE);
-        rightFront.setDirection(DcMotor.Direction.FORWARD);
-        leftRear.setDirection(DcMotor.Direction.REVERSE);
-        rightRear.setDirection(DcMotor.Direction.FORWARD);
+        // Set Mecanum DriveTrain.
+        driveTrain = new Mecanum_DriveTrain(hardwareMap.get(DcMotor.class, "left_front"),
+                hardwareMap.get(DcMotor.class, "right_front"),
+                hardwareMap.get(DcMotor.class, "left_rear"),
+                hardwareMap.get(DcMotor.class, "right_rear"),
+                0.1, 0.5);
 
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
@@ -83,20 +77,8 @@ public class BasicOpMode_Mecanum_Drive extends LinearOpMode {
         // Run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
 
-            // Make all calculations necessary.
-            double r = Math.hypot(-gamepad1.left_stick_x, gamepad1.left_stick_y);
-            double robotAngle = Math.atan2(gamepad1.left_stick_y, -gamepad1.left_stick_x) - Math.PI / 4;
-            double rightX = - gamepad1.right_stick_x;
-            final double v1 = r * Math.cos(robotAngle) + rightX;
-            final double v2 = r * Math.sin(robotAngle) - rightX;
-            final double v3 = r * Math.sin(robotAngle) + rightX;
-            final double v4 = r * Math.cos(robotAngle) - rightX;
-
-            // Apply power to the motors.
-            leftFront.setPower(v1);
-            rightFront.setPower(v2);
-            leftRear.setPower(v3);
-            rightRear.setPower(v4);
+            // Provide joystick readings to driveTrain.
+            driveTrain.driveJoystick(-gamepad1.left_stick_x, gamepad1.left_stick_y, -gamepad1.right_stick_x);
 
             // Show the elapsed game time and wheel power.
             telemetry.addData("Status", "Run Time: " + runtime.toString());
