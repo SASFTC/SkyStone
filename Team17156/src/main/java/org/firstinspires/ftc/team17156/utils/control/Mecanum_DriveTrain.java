@@ -2,30 +2,30 @@ package org.firstinspires.ftc.team17156.utils.control;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.HardwareMap;
 
 public class Mecanum_DriveTrain {
 
     /* Fields */
+    private HardwareMap hardwareMap;
     private DcMotor motor_left_front, motor_right_front;
     private DcMotor motor_left_back, motor_right_back;
-
-//    private
 
     private double accel;
     private double maxSpeed;
 
     // Keep track of some metrics.
     private double speed = 0;               //  -1 <=     speed     <= 1
-    private double angle = 0;               //   0 <=     angle     <= 2pi
+    private double angle = 0;               // -pi <=     angle     <= pi
     private double rotationSpeed = 0;       //  -1 <= rotationSpeed <= 1
 
 
 
     /* Methods */
-
     /**
      * Constructor for the Mecanum Drive class. Given an instance of all four motors,
      * it handles all the necessary math and logic to drive the mecanum Drivetrain.
+     * @param hardwareMap: The reference to the HardwareMap in the OpClass.
      * @param left_front: The front-left motor.
      * @param right_front: The front-right motor.
      * @param left_back: The back-left motor.
@@ -33,12 +33,15 @@ public class Mecanum_DriveTrain {
      * @param accel: The acceleration limit of the robot.
      * @param maxSpeed: The maximum speed of the robot.
      */
-    public Mecanum_DriveTrain(DcMotor left_front, DcMotor right_front, DcMotor left_back, DcMotor right_back, double accel, double maxSpeed) {
+    public Mecanum_DriveTrain(HardwareMap hardwareMap, String left_front, String right_front, String left_back, String right_back, double accel, double maxSpeed) {
+        // Get HardwareMap
+        this.hardwareMap = hardwareMap;
+
         // Set the motors.
-        this.motor_left_front = left_front;
-        this.motor_right_front = right_front;
-        this.motor_left_back = left_back;
-        this.motor_right_back = right_back;
+        this.motor_left_front = this.hardwareMap.get(DcMotor.class, left_front);
+        this.motor_right_front = this.hardwareMap.get(DcMotor.class, right_front);
+        this.motor_left_back = this.hardwareMap.get(DcMotor.class, left_back);
+        this.motor_right_back = this.hardwareMap.get(DcMotor.class, right_back);
 
         // Set the motor orientation.
         this.motor_left_front.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -50,8 +53,8 @@ public class Mecanum_DriveTrain {
         this.accel = accel;
         this.maxSpeed = maxSpeed;
     }
-    public Mecanum_DriveTrain(DcMotor left_front, DcMotor right_front, DcMotor left_back, DcMotor right_back) {
-        this(left_front, right_front, left_back, right_back, 0.1, 1);
+    public Mecanum_DriveTrain(HardwareMap hardwareMap, String left_front, String right_front, String left_back, String right_back) {
+        this(hardwareMap, left_front, right_front, left_back, right_back, 0.1, 1);
     }
 
 
@@ -65,19 +68,17 @@ public class Mecanum_DriveTrain {
     public void drive(double speed, double angle, double rotationSpeed) {
 
         // Constrain speed to max speed.
-        speed = this.constrain(speed, -this.maxSpeed, this.maxSpeed);
+        this.speed = this.constrain(speed, -this.maxSpeed, this.maxSpeed);
+        this.angle = angle;
+        this.rotationSpeed = this.constrain(rotationSpeed, -1, 1);
 
         // Calculate each motor's speed.
-        double v1 = speed * Math.sin(angle + Math.PI/4) + rotationSpeed;    // Left front motor.
-        double v2 = speed * Math.cos(angle + Math.PI/4) - rotationSpeed;    // Right front motor.
-        double v3 = speed * Math.cos(angle + Math.PI/4) + rotationSpeed;    // Left back motor.
-        double v4 = speed * Math.sin(angle + Math.PI/4) - rotationSpeed;    // Right back motor.
+        double v1 = this.speed * Math.cos(this.angle - Math.PI/4) + this.rotationSpeed;    // Left front motor.
+        double v2 = this.speed * Math.sin(this.angle - Math.PI/4) - this.rotationSpeed;    // Right front motor.
+        double v3 = this.speed * Math.sin(this.angle - Math.PI/4) + this.rotationSpeed;    // Left back motor.
+        double v4 = this.speed * Math.cos(this.angle - Math.PI/4) - this.rotationSpeed;    // Right back motor.
 
         // Apply the desired power to each motor.
-//        this.motor_left_front.setPower(v1);
-//        this.motor_right_front.setPower(v2);
-//        this.motor_left_back.setPower(v3);
-//        this.motor_right_back.setPower(v4);
         accelMotor(this.motor_left_front, v1);
         accelMotor(this.motor_right_front, v2);
         accelMotor(this.motor_left_back, v3);
@@ -98,13 +99,13 @@ public class Mecanum_DriveTrain {
         double angle = Math.atan2(y, x);
 
         // Call the main driving mehtod.
-        this.drive(speed, angle, rotation);
-
+        this.drive(speed, angle , rotation);
     }
 
 
-    /* helper methods */
-    // TODO Test if this method really works, and figure out the best accel value.
+    /* Helper Methods */
+    // TODO Test if this method really works, and figure out the optimal accel value.
+    // Trapezoidal motor control.
     private void accelMotor(DcMotor motor, double setpoint) {
 
         // If current power is bigger than what the acceleration limit allows (either way).

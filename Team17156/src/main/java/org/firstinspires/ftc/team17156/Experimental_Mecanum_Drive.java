@@ -31,7 +31,6 @@ package org.firstinspires.ftc.team17156;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.team17156.utils.control.Mecanum_DriveTrain;
@@ -64,21 +63,21 @@ public class Experimental_Mecanum_Drive extends LinearOpMode {
         telemetry.update();
 
         // Set Mecanum DriveTrain.
-        driveTrain = new Mecanum_DriveTrain(hardwareMap.get(DcMotor.class, "left_front"),
-                hardwareMap.get(DcMotor.class, "right_front"),
-                hardwareMap.get(DcMotor.class, "left_rear"),
-                hardwareMap.get(DcMotor.class, "right_rear"),
-                0.1, 0.5);
+        driveTrain = new Mecanum_DriveTrain(hardwareMap, "left_front",
+                "right_front", "left_rear", "right_rear",
+                0.1, 075);
+
 
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
         runtime.reset();
 
         // Run until the end of the match (driver presses STOP)
-        while (opModeIsActive()) {
+        while (opModeIsActive() && runtime.time() < 2) {
 
             // Provide joystick readings to driveTrain.
-            driveTrain.driveJoystick(-gamepad1.left_stick_x, gamepad1.left_stick_y, -gamepad1.right_stick_x);
+//            driveTrain.driveJoystick(-gamepad1.left_stick_x, gamepad1.left_stick_y, -gamepad1.right_stick_x);
+            driveTrain.drive(0.5, 0, 0);
 
             // Show the elapsed game time and wheel power.
             telemetry.addData("Status", "Run Time: " + runtime.toString());
