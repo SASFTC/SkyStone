@@ -121,10 +121,10 @@ public class MecanumDrivetrain {
 
         // Calculate the necessary values.
         double speed = Math.hypot(x, -y);
-        double angle = Math.atan2(-y, x) - Math.PI/2;   // Make angle=0 when joystick is forward.
+        double angle = Math.atan2(-y, -x) - Math.PI/2;   // Make angle=0 when joystick is forward.
 
         // Call the main driving mehtod.
-        this.drive(speed, angle , rotation);
+        this.drive(speed, angle , -rotation);
     }
 
 
@@ -135,6 +135,9 @@ public class MecanumDrivetrain {
         this.motor_right_back.setPower(0);
     }
 
+    public void setMaxSpeed(double maxSpeed) {
+        this.maxSpeed = clip(maxSpeed, -1, 1);
+    }
 
     /* Helper Methods */
 
@@ -147,7 +150,7 @@ public class MecanumDrivetrain {
 
         // NOTE: getPower() returns the power in the interval [0, 1].
         // Therefore, we should use the abs value of setpoint [-1, 1].
-        setpoint = Math.abs(setpoint);
+//        setpoint = Math.abs(setpoint);
 
         // If current power is bigger than what the acceleration limit allows (either way).
         if (this.accel < Math.abs(motor.getPower() - setpoint)) {

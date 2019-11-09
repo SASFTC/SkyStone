@@ -69,8 +69,8 @@ public class Experimental_Mecanum_Drive extends OpMode {
 
         runtime.reset();
 
-        while (runtime.time() < 2)
-            driveTrain.drive(1, 0, 0);
+//        while (runtime.time() < 2)
+//            driveTrain.drive(1, 0, 0);
 
     }
 
@@ -78,9 +78,10 @@ public class Experimental_Mecanum_Drive extends OpMode {
     public void loop() {
 
         // Provide joystick readings to driveTrain.
-//        driveTrain.driveJoystick(gamepad1.left_stick_x, gamepad1.left_stick_y, gamepad1.right_stick_x);
+        driveTrain.driveJoystick(gamepad1.left_stick_x, gamepad1.left_stick_y, gamepad1.right_stick_x);
 //        driveTrain.stop();
-        driveTrain.drive(0, 0, 0);
+//        driveTrain.drive(0, 0, 0);
+        
 
         // Show the elapsed game time and wheel power.
         telemetry.addData("Status", "Run Time: " + runtime.toString());
