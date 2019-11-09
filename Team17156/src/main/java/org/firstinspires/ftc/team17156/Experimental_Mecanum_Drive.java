@@ -29,7 +29,7 @@
 
 package org.firstinspires.ftc.team17156;
 
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -50,39 +50,46 @@ import org.firstinspires.ftc.team17156.scotslib.hardware.drivetrain.MecanumDrive
  */
 
 @TeleOp(name="Experimental Mecanum Drive", group="Linear Opmode")
-//@Disabled
-public class Experimental_Mecanum_Drive extends LinearOpMode {
+public class Experimental_Mecanum_Drive extends OpMode {
 
     // Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime();
     private MecanumDrivetrain driveTrain;
 
+
     @Override
-    public void runOpMode() {
+    public void init() {
+
         telemetry.addData("Status", "Initialized");
         telemetry.update();
-
         // Set Mecanum DriveTrain.
         driveTrain = new MecanumDrivetrain(hardwareMap, "left_front",
-                "right_front", "left_rear", "right_rear",
-                0.3, 1, false);
+                "right_front", "left_back", "right_back",
+                0.2, 0.5, false);
 
-
-        // Wait for the game to start (driver presses PLAY)
-        waitForStart();
         runtime.reset();
 
-        // Run until the end of the match (driver presses STOP)
-//        while (opModeIsActive() && runtime.time() < 2) {
-        while (opModeIsActive()) {
+        while (runtime.time() < 2)
+            driveTrain.drive(1, 0, 0);
 
-            // Provide joystick readings to driveTrain.
-            driveTrain.driveJoystick(gamepad1.left_stick_x, gamepad1.left_stick_y, gamepad1.right_stick_x);
-//            driveTrain.drive(0.5, 0, 0);
+    }
 
-            // Show the elapsed game time and wheel power.
-            telemetry.addData("Status", "Run Time: " + runtime.toString());
-            telemetry.update();
-        }
+    @Override
+    public void loop() {
+
+        // Provide joystick readings to driveTrain.
+//        driveTrain.driveJoystick(gamepad1.left_stick_x, gamepad1.left_stick_y, gamepad1.right_stick_x);
+//        driveTrain.stop();
+        driveTrain.drive(0, 0, 0);
+
+        // Show the elapsed game time and wheel power.
+        telemetry.addData("Status", "Run Time: " + runtime.toString());
+        telemetry.update();
+
+    }
+
+    @Override
+    public void stop() {
+
     }
 }

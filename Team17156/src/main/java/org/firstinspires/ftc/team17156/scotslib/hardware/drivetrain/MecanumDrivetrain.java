@@ -48,29 +48,24 @@ public class MecanumDrivetrain {
         this.motor_right_back = this.hardwareMap.get(DcMotor.class, right_back);
 
         // Set the motor orientation.
-        if (!invertedDrive) {
-            this.motor_left_front.setDirection(DcMotorSimple.Direction.FORWARD);
-            this.motor_right_front.setDirection(DcMotorSimple.Direction.REVERSE);
-            this.motor_left_back.setDirection(DcMotorSimple.Direction.FORWARD);
-            this.motor_right_back.setDirection(DcMotorSimple.Direction.REVERSE);
-        } else {
-            this.motor_left_front.setDirection(DcMotorSimple.Direction.REVERSE);
-            this.motor_right_front.setDirection(DcMotorSimple.Direction.FORWARD);
-            this.motor_left_back.setDirection(DcMotorSimple.Direction.REVERSE);
-            this.motor_right_back.setDirection(DcMotorSimple.Direction.FORWARD);
-        }
+        this.motor_left_front.setDirection(DcMotorSimple.Direction.FORWARD);
+        this.motor_right_front.setDirection(DcMotorSimple.Direction.REVERSE);
+        this.motor_left_back.setDirection(DcMotorSimple.Direction.FORWARD);
+        this.motor_right_back.setDirection(DcMotorSimple.Direction.REVERSE);
+
 
         // Turn on PID for the motors' velocity control.
-        this.motor_left_front.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        this.motor_right_front.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        this.motor_left_back.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        this.motor_right_back.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+//        this.motor_left_front.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+//        this.motor_right_front.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+//        this.motor_left_back.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+//        this.motor_right_back.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         // Set ZeroPowerBehavior to BRAKE, so that any forces acting on the robot will not cause movement.
-        this.motor_left_front.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        this.motor_right_front.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        this.motor_left_back.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        this.motor_right_back.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        // TODO Check if accel block has been fixed and workds with brakes.
+//        this.motor_left_front.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+//        this.motor_right_front.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+//        this.motor_left_back.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+//        this.motor_right_back.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         // Set other params.
         this.accel = accel;
@@ -94,19 +89,23 @@ public class MecanumDrivetrain {
         // Constrain speed to max speed.
         this.speed = clip(speed, -this.maxSpeed, this.maxSpeed);
         this.angle = angle;
-        this.rotation = clip(rotation, -1, 1);
+        this.rotation = clip(rotation, -this.maxSpeed, this.maxSpeed);
 
         // Calculate each motor's speed.
-        double v1 = this.speed * Math.sin(this.angle + Math.PI/4) + this.rotation;    // Left front motor.
-        double v2 = this.speed * Math.cos(this.angle + Math.PI/4) - this.rotation;    // Right front motor.
-        double v3 = this.speed * Math.cos(this.angle + Math.PI/4) + this.rotation;    // Left back motor.
-        double v4 = this.speed * Math.sin(this.angle + Math.PI/4) - this.rotation;    // Right back motor.
+        double v1 = this.speed * Math.sin(this.angle + Math.PI/4) - this.rotation;    // Left front motor.
+        double v2 = this.speed * Math.cos(this.angle + Math.PI/4) + this.rotation;    // Right front motor.
+        double v3 = this.speed * Math.cos(this.angle + Math.PI/4) - this.rotation;    // Left back motor.
+        double v4 = this.speed * Math.sin(this.angle + Math.PI/4) + this.rotation;    // Right back motor.
 
         // Apply the desired power to each motor.
         accelMotor(this.motor_left_front, clip(v1, -1, 1));
         accelMotor(this.motor_right_front, clip(v2, -1, 1));
         accelMotor(this.motor_left_back, clip(v3, -1, 1));
         accelMotor(this.motor_right_back, clip(v4, -1, 1));
+//        this.motor_left_front.setPower(v1);
+//        this.motor_right_front.setPower(v2);
+//        this.motor_left_back.setPower(v3);
+//        this.motor_right_back.setPower(v4);
     }
 
 
@@ -122,16 +121,33 @@ public class MecanumDrivetrain {
 
         // Calculate the necessary values.
         double speed = Math.hypot(x, -y);
-        double angle = Math.atan2(-y, x) - Math.PI/2;   // Zero angle when joystick is forward.
+        double angle = Math.atan2(-y, x) - Math.PI/2;   // Make angle=0 when joystick is forward.
 
         // Call the main driving mehtod.
         this.drive(speed, angle , rotation);
     }
 
 
+    public void stop() {
+        this.motor_left_front.setPower(0);
+        this.motor_right_front.setPower(0);
+        this.motor_left_back.setPower(0);
+        this.motor_right_back.setPower(0);
+    }
+
+
     /* Helper Methods */
-    // Trapezoidal motor control.
+
+    /**
+     * A trapezoidal acceleration control for the motors, to avoid abrupt accelerations/decelerations.
+     * @param motor: The DcMotor to which the power is applied.
+     * @param setpoint: The final velocity [-1, 1].
+     */
     private void accelMotor(DcMotor motor, double setpoint) {
+
+        // NOTE: getPower() returns the power in the interval [0, 1].
+        // Therefore, we should use the abs value of setpoint [-1, 1].
+        setpoint = Math.abs(setpoint);
 
         // If current power is bigger than what the acceleration limit allows (either way).
         if (this.accel < Math.abs(motor.getPower() - setpoint)) {
