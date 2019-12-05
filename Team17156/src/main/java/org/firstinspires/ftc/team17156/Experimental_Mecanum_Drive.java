@@ -29,10 +29,11 @@
 
 package org.firstinspires.ftc.team17156;
 
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
+
+import org.firstinspires.ftc.team17156.scotslib.hardware.drivetrain.MecanumDrivetrain;
 
 
 /**
@@ -48,59 +49,46 @@ import com.qualcomm.robotcore.util.ElapsedTime;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@TeleOp(name="Basic: Mecanum Drive", group="Linear Opmode")
-//@Disabled
-public class BasicOpMode_Mecanum_Drive extends LinearOpMode {
+@TeleOp(name="Experimental Mecanum Drive", group="Testing")
+public class Experimental_Mecanum_Drive extends OpMode {
 
     // Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime();
-    private DcMotor leftFront = null;
-    private DcMotor rightFront = null;
-    private DcMotor leftRear = null;
-    private DcMotor rightRear = null;
+    private MecanumDrivetrain driveTrain;
+
 
     @Override
-    public void runOpMode() {
+    public void init() {
+
         telemetry.addData("Status", "Initialized");
         telemetry.update();
+        // Set Mecanum DriveTrain.
+        driveTrain = new MecanumDrivetrain(hardwareMap, "left_front",
+                "right_front", "left_back", "right_back",
+                0.05, 1, false);
 
-        // Set motors.
-        leftFront  = hardwareMap.get(DcMotor.class, "left_front");
-        rightFront = hardwareMap.get(DcMotor.class, "right_front");
-        leftRear  = hardwareMap.get(DcMotor.class, "left_rear");
-        rightRear = hardwareMap.get(DcMotor.class, "right_rear");
-
-        // Set motor directions.
-        leftFront.setDirection(DcMotor.Direction.REVERSE);
-        rightFront.setDirection(DcMotor.Direction.FORWARD);
-        leftRear.setDirection(DcMotor.Direction.REVERSE);
-        rightRear.setDirection(DcMotor.Direction.FORWARD);
-
-        // Wait for the game to start (driver presses PLAY)
-        waitForStart();
+        // Reset timer.
         runtime.reset();
+    }
 
-        // Run until the end of the match (driver presses STOP)
-        while (opModeIsActive()) {
+    @Override
+    public void loop() {
 
-            // Make all calculations necessary.
-            double r = Math.hypot(-gamepad1.left_stick_x, gamepad1.left_stick_y);
-            double robotAngle = Math.atan2(gamepad1.left_stick_y, -gamepad1.left_stick_x) - Math.PI / 4;
-            double rightX = - gamepad1.right_stick_x;
-            final double v1 = r * Math.cos(robotAngle) + rightX;
-            final double v2 = r * Math.sin(robotAngle) - rightX;
-            final double v3 = r * Math.sin(robotAngle) + rightX;
-            final double v4 = r * Math.cos(robotAngle) - rightX;
+        // Provide joystick input to driveTrain.
+        driveTrain.driveJoystick(gamepad1.left_stick_x, gamepad1.left_stick_y, gamepad1.right_stick_x);
+//        driveTrain.drive(0.3, Math.PI/4, 0);
 
-            // Apply power to the motors.
-            leftFront.setPower(v1);
-            rightFront.setPower(v2);
-            leftRear.setPower(v3);
-            rightRear.setPower(v4);
 
-            // Show the elapsed game time and wheel power.
-            telemetry.addData("Status", "Run Time: " + runtime.toString());
-            telemetry.update();
-        }
+        // Show the elapsed game time and wheel power.
+        telemetry.addData("Status", "Run Time: " + runtime.toString());
+        telemetry.update();
+
+    }
+
+    @Override
+    public void stop() {
+
+        // Stop the drivetrain and break the robot.
+        driveTrain.stop();
     }
 }
