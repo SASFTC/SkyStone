@@ -49,7 +49,7 @@ import org.firstinspires.ftc.team17156.scotslib.hardware.drivetrain.MecanumDrive
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@TeleOp(name="Experimental Mecanum Drive", group="Linear Opmode")
+@TeleOp(name="Experimental Mecanum Drive", group="Testing")
 public class Experimental_Mecanum_Drive extends OpMode {
 
     // Declare OpMode members.
@@ -65,23 +65,19 @@ public class Experimental_Mecanum_Drive extends OpMode {
         // Set Mecanum DriveTrain.
         driveTrain = new MecanumDrivetrain(hardwareMap, "left_front",
                 "right_front", "left_back", "right_back",
-                0.2, 0.5, false);
+                0.05, 1, false);
 
+        // Reset timer.
         runtime.reset();
-
-//        while (runtime.time() < 2)
-//            driveTrain.drive(1, 0, 0);
-
     }
 
     @Override
     public void loop() {
 
-        // Provide joystick readings to driveTrain.
+        // Provide joystick input to driveTrain.
         driveTrain.driveJoystick(gamepad1.left_stick_x, gamepad1.left_stick_y, gamepad1.right_stick_x);
-//        driveTrain.stop();
-//        driveTrain.drive(0, 0, 0);
-        
+//        driveTrain.drive(0.3, Math.PI/4, 0);
+
 
         // Show the elapsed game time and wheel power.
         telemetry.addData("Status", "Run Time: " + runtime.toString());
@@ -92,5 +88,7 @@ public class Experimental_Mecanum_Drive extends OpMode {
     @Override
     public void stop() {
 
+        // Stop the drivetrain and break the robot.
+        driveTrain.stop();
     }
 }
