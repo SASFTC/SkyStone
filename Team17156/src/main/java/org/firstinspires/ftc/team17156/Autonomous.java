@@ -65,7 +65,7 @@ public class Autonomous extends LinearOpMode {
         telemetry.addData("Status", "Initialized");
         telemetry.update();
         ColorSensor color_sensor;
-        color_sensor = hardwareMap.colorSensor.get("color");
+        color_sensor = hardwareMap.get(ColorSensor.class, "color");
 
 
         // Run until the end of the match (driver presses STOP)
