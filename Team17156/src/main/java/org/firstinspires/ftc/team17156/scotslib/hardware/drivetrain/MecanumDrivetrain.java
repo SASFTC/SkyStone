@@ -94,7 +94,7 @@ public class MecanumDrivetrain {
     public void drive(double speed, double angle, double rotation) {
         // Constrain speed to max speed.
         this.speed = clip(speed, -this.maxSpeed, this.maxSpeed);
-        this.angle = angle;
+        this.angle = Math.PI - angle;
         this.rotation = clip(-rotation, -this.maxSpeed, this.maxSpeed);
 
         // Calculate each motor's speed.

@@ -27,7 +27,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.firstinspires.ftc.robotcontroller.external.samples;
+package org.firstinspires.ftc.team17156;
 
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -69,7 +69,7 @@ public class ConceptTensorFlowObjectDetectionWebcam extends LinearOpMode {
      * and paste it in to your code on the next line, between the double quotes.
      */
     private static final String VUFORIA_KEY =
-            " -- YOUR NEW VUFORIA KEY GOES HERE  --- ";
+            "ARBEVQT/////AAABmS0zUae59EEJk2iGh1I+VqOICK+vLlFJiy+f811/mahgrDxrDyAu7rqf42pwAWMnAp/Rg+4KI9ScLlVq0e1w8R692Cx+WKqFYFABpPQlLAGHtV3627m5vu3Gl4HfNPoKyMvZBgKckGyirjII0ilBLN4xeQ1JUsQxgxSNdN/phaceEW76Tz9IUFHm+2ZtMpb+QRkYeOK93qe+T2FutvgqyWtUkwPe4oV/V215KdziRxKbUiKO6LXSzXfURrKmJE+WEJ1Rliu38El0FKL8EP3m6slQ0fzGQq10UdthJoRprYeZFzGuzxgYtsVlDkKzUSXH2djHFDeSmfXu830ITIU77Li3tEkDDJ3OmMiS6sm97wCr";
 
     /**
      * {@link #vuforia} is the variable we will use to store our instance of the Vuforia
