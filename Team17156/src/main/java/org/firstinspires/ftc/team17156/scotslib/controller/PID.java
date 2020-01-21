@@ -1,6 +1,9 @@
 package org.firstinspires.ftc.team17156.scotslib.controller;
 
+import com.qualcomm.robotcore.hardware.DcMotor;
+
 import static java.lang.System.currentTimeMillis;
+import static java.lang.Thread.sleep;
 
 public class PID {
 

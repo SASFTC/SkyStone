@@ -33,7 +33,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.team17156.scotslib.hardware.drivetrain.MecanumDrivetrain;
+import org.firstinspires.ftc.team17156.scotslib.hardware.drivetrain.Intake;
 
 
 /**
@@ -49,15 +49,12 @@ import org.firstinspires.ftc.team17156.scotslib.hardware.drivetrain.MecanumDrive
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@TeleOp(name="Experimental Mecanum Drive", group="Testing")
-public class Experimental_Mecanum_Drive extends OpMode {
+@TeleOp(name="intake_testing", group="Testing")
+public class intake_testing extends OpMode {
 
     // Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime();
-    private MecanumDrivetrain driveTrain;
-    private double left_stick_x;
-    private double left_stick_y;
-    private double right_stick_x;
+    public Intake intake_drive;
 
 
     @Override
@@ -65,15 +62,8 @@ public class Experimental_Mecanum_Drive extends OpMode {
 
         telemetry.addData("Status", "Initialized");
         telemetry.update();
-        // Set Mecanum DriveTrain.
-        // Calibrating the controller
-        left_stick_x = -gamepad1.left_stick_x;
-        left_stick_y = -gamepad1.left_stick_y;
-        right_stick_x = -gamepad1.right_stick_x;
-        driveTrain = new MecanumDrivetrain(hardwareMap, "left_front",
-                "right_front", "left_back", "right_back",
-                0.05, 1, true);
-
+        // Set intake motors.
+        intake_drive = new Intake(hardwareMap, "intake1", "intake2", 1.0);
         // Reset timer.
         runtime.reset();
     }
@@ -82,15 +72,12 @@ public class Experimental_Mecanum_Drive extends OpMode {
     public void loop() {
 
         // Provide joystick input to driveTrain.
-        driveTrain.driveJoystick(gamepad1.left_stick_x + left_stick_x, gamepad1.left_stick_y + left_stick_y, gamepad1.right_stick_x + right_stick_x);
+        intake_drive.run(1.0);
 //        driveTrain.drive(0.3, Math.PI/4, 0);
 
 
         // Show the elapsed game time and wheel power.
         telemetry.addData("Status", "Run Time: " + runtime.toString());
-        telemetry.addData("Status", gamepad1.left_stick_x + left_stick_x);
-        telemetry.addData("Status", gamepad1.left_stick_y + left_stick_y);
-        telemetry.addData("Status", gamepad1.right_stick_x + right_stick_x);
         telemetry.update();
 
     }
@@ -99,6 +86,6 @@ public class Experimental_Mecanum_Drive extends OpMode {
     public void stop() {
 
         // Stop the drivetrain and break the robot.
-        driveTrain.stop();
+        intake_drive.stop();
     }
 }

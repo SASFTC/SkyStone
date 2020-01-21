@@ -55,9 +55,9 @@ public class MecanumDrivetrain {
             this.motor_right_back.setDirection(DcMotorSimple.Direction.REVERSE);
         } else {
             this.motor_left_front.setDirection(DcMotorSimple.Direction.REVERSE);
-            this.motor_right_front.setDirection(DcMotorSimple.Direction.FORWARD);
+            this.motor_right_front.setDirection(DcMotorSimple.Direction.REVERSE);
             this.motor_left_back.setDirection(DcMotorSimple.Direction.REVERSE);
-            this.motor_right_back.setDirection(DcMotorSimple.Direction.FORWARD);
+            this.motor_right_back.setDirection(DcMotorSimple.Direction.REVERSE);
         }
 
 
@@ -89,10 +89,9 @@ public class MecanumDrivetrain {
      * @param speed: The magnitude of the velocity [-1, 1].
      * @param angle: The direction of the velocity [-pi, pi]. The angle is zero when going forward,
      *             negative clockwise, and positive counterclockwise.
-     * @param rotation: The rotational speed [-1, 1]. Clockwise is positive, and counterclockwise is negative.
+     * @param rotation: The rotational speed [-1, 1]. Clockwise is  positive, and counterclockwise is negative.
      */
     public void drive(double speed, double angle, double rotation) {
-
         // Constrain speed to max speed.
         this.speed = clip(speed, -this.maxSpeed, this.maxSpeed);
         this.angle = angle;
@@ -100,8 +99,8 @@ public class MecanumDrivetrain {
 
         // Calculate each motor's speed.
         double v1 = this.speed * Math.sin(this.angle + Math.PI/4) - this.rotation;    // Left front motor.
-        double v2 = this.speed * Math.cos(this.angle + Math.PI/4) + this.rotation;    // Right front motor.
-        double v3 = this.speed * Math.cos(this.angle + Math.PI/4) - this.rotation;    // Left back motor.
+        double v2 = this.speed * Math.cos(this.angle + Math.PI/4) - this.rotation;    // Right front motor.
+        double v3 = this.speed * Math.cos(this.angle + Math.PI/4) + this.rotation;    // Left back motor.
         double v4 = this.speed * Math.sin(this.angle + Math.PI/4) + this.rotation;    // Right back motor.
 
         // Apply the desired power to each motor.
@@ -110,6 +109,7 @@ public class MecanumDrivetrain {
         accelMotor(this.motor_left_back, clip(v3, -1, 1));
         accelMotor(this.motor_right_back, clip(v4, -1, 1));
 //        this.motor_left_front.setPower(v1);
+//        this.motor_right_front.setPower(v2);
 //        this.motor_right_front.setPower(v2);
 //        this.motor_left_back.setPower(v3);
 //        this.motor_right_back.setPower(v4);
@@ -125,11 +125,13 @@ public class MecanumDrivetrain {
      * @param rotation: The x component of the secondary joystick, controlling rotation.
      */
     public void driveJoystick(double x, double y, double rotation) {
-
         // Calculate the necessary values.
         double speed = Math.hypot(x, y);
         // NOTE: in our controller, the Y axis is inverted – 1 is back and -1 is forward, so we invert it.
-        double angle = Math.atan2(-y, -x) - Math.PI/2;   // Make angle = 0 when joystick is forward.
+        double angle = Math.atan2(-y, -x) - Math.PI;   // Make angle = 0 when joystick is forward.
+//        double angle = Math.atan2(-y, -x) - Math.PI/2;   // Make angle = 0 when joystick is forward.
+
+
 
         // Call the main driving method.
         this.drive(speed, angle , rotation);
