@@ -86,7 +86,6 @@ public class Experimental_Mecanum_Drive extends OpMode {
 //        driveTrain.drive(0.3, Math.PI/4, 0);
 
 
-        // Show the elapsed game time and wheel power.
         telemetry.addData("Status", "Run Time: " + runtime.toString());
         telemetry.addData("Status", gamepad1.left_stick_x + left_stick_x);
         telemetry.addData("Status", gamepad1.left_stick_y + left_stick_y);
