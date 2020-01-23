@@ -15,7 +15,7 @@ public class Intake extends Extension {
     private double speed;
 
     public enum Direction {
-        IN, OUT, STOP;
+        IN, OUT, STOP
     }
 
 
@@ -28,6 +28,7 @@ public class Intake extends Extension {
      * @param speed: The speed at which the intake should work [-1, 1].
      */
     public Intake (HardwareMap hardwareMap, String motor_left, String motor_right, double speed) {
+
         // Get the HardwareMap.
         this.hardwareMap = hardwareMap;
 
@@ -39,7 +40,7 @@ public class Intake extends Extension {
         this.motor_left.setDirection(DcMotorSimple.Direction.FORWARD);
         this.motor_right.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        // Set ZeroPowerBehavior to BRAKE, so that any forces acting on the robot will not cause movement.
+        // Set ZeroPowerBehavior to BRAKE, so that any forces acting on the intake will not cause movement.
         this.motor_left.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         this.motor_right.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
@@ -76,6 +77,15 @@ public class Intake extends Extension {
 
         this.motor_left.setPower(this.speed);
         this.motor_right.setPower(this.speed);
+    }
+
+    /**
+     * Sets the maximum speed for the intake mechanism. Must be positive and [0, 1].
+     * @param speed: The new speed.
+     */
+    public void setSpeed(double speed) {
+
+        this.speed = clip(Math.abs(speed), 0, 1);
     }
 
 

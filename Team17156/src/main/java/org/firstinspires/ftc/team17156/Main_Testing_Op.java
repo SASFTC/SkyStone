@@ -64,7 +64,7 @@ public class Main_Testing_Op extends OpMode {
         // Intake.
         if (gamepad1.dpad_down == true && gamepad1.dpad_up == false) {
             this.intake.run(Intake.Direction.IN);
-        } else if (gamepad1.dpad_down == false && gamepad1.dpad_up == true) {
+        } else if (gamepad1.dpad_up == true && gamepad1.dpad_down == false) {
             this.intake.run(Intake.Direction.OUT);
         } else {
             this.intake.run(Intake.Direction.STOP);

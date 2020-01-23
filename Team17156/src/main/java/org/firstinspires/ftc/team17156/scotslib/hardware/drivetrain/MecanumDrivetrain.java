@@ -25,7 +25,6 @@ public class MecanumDrivetrain extends Drivetrain {
 
 
     /* Methods */
-
     /**
      * Constructor for the Mecanum Drive class. Given an instance of all four motors,
      * it handles all the necessary math and logic to drive the mecanum Drivetrain.
@@ -49,6 +48,7 @@ public class MecanumDrivetrain extends Drivetrain {
         this.motor_right_front = this.hardwareMap.get(DcMotor.class, right_front);
         this.motor_left_back = this.hardwareMap.get(DcMotor.class, left_back);
         this.motor_right_back = this.hardwareMap.get(DcMotor.class, right_back);
+        this.hardwareMap.get(DcMotor.class, "motor");
 
         // Set the motor orientation.
         if (!invertedDrive) {
@@ -114,10 +114,6 @@ public class MecanumDrivetrain extends Drivetrain {
         accelMotor(this.motor_right_front, clip(v2, -1, 1));
         accelMotor(this.motor_left_back, clip(v3, -1, 1));
         accelMotor(this.motor_right_back, clip(v4, -1, 1));
-//        this.motor_left_front.setPower(v1);
-//        this.motor_right_front.setPower(v2);
-//        this.motor_left_back.setPower(v3);
-//        this.motor_right_back.setPower(v4);
     }
 
 
