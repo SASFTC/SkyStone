@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.team17156.scotslib.hardware.drivetrain.MecanumDrivetrain;
 import org.firstinspires.ftc.team17156.scotslib.hardware.extension.Intake;
+import org.firstinspires.ftc.team17156.scotslib.hardware.extension.LiftingSystem;
 
 @TeleOp(name = "Main Testing Op", group = "Test")
 public class Main_Testing_Op extends OpMode {
@@ -13,8 +14,9 @@ public class Main_Testing_Op extends OpMode {
 
     /* Fields */
     private ElapsedTime runtime = new ElapsedTime();
-    MecanumDrivetrain dTrain;
-    Intake intake;
+    private MecanumDrivetrain dTrain;
+    private Intake intake;
+    private LiftingSystem liftingSystem;
 
 
     /*
@@ -30,6 +32,9 @@ public class Main_Testing_Op extends OpMode {
 
         this.intake = new Intake(hardwareMap, "left_intake_motor",
                 "right_intake_motor", 1);
+
+        this.liftingSystem = new LiftingSystem(hardwareMap, "lifting_motor",
+                "wrist_servo", "grabbing_servo", 1, 50);
 
         // Telemetry.
         telemetry.addData("Status", "Initialized");
@@ -62,12 +67,21 @@ public class Main_Testing_Op extends OpMode {
         this.dTrain.driveJoystick(gamepad1.left_stick_x, gamepad1.left_stick_y, gamepad1.right_stick_x);
 
         // Intake.
-        if (gamepad1.dpad_down == true && gamepad1.dpad_up == false) {
+        if (gamepad1.a == true && gamepad1.b == false) {
             this.intake.run(Intake.Direction.IN);
-        } else if (gamepad1.dpad_up == true && gamepad1.dpad_down == false) {
+        } else if (gamepad1.b == true && gamepad1.a == false) {
             this.intake.run(Intake.Direction.OUT);
         } else {
             this.intake.run(Intake.Direction.STOP);
+        }
+
+        // Lifting System.
+        if (gamepad1.dpad_up == true && gamepad1.dpad_down == false) {
+            this.liftingSystem.raise(1);
+        } else if (gamepad1.dpad_down == true && gamepad1.dpad_up == false) {
+            this.liftingSystem.raise(-1);
+        } else {
+            this.liftingSystem.stop();
         }
 
         // Telemetry.
@@ -79,5 +93,6 @@ public class Main_Testing_Op extends OpMode {
      */
     @Override
     public void stop() {
+
     }
 }

@@ -7,10 +7,10 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import static com.qualcomm.robotcore.util.Range.clip;
 
+
 public class MecanumDrivetrain extends Drivetrain {
 
     /* Fields */
-    private HardwareMap hardwareMap;
     private DcMotor motor_left_front, motor_right_front;
     private DcMotor motor_left_back, motor_right_back;
 
@@ -41,14 +41,14 @@ public class MecanumDrivetrain extends Drivetrain {
                              String left_back, String right_back, double accel, double maxSpeed,
                              boolean invertedDrive) {
         // Get HardwareMap
-        this.hardwareMap = hardwareMap;
+        super(hardwareMap);
 
         // Set the motors' instances.
-        this.motor_left_front = this.hardwareMap.get(DcMotor.class, left_front);
-        this.motor_right_front = this.hardwareMap.get(DcMotor.class, right_front);
-        this.motor_left_back = this.hardwareMap.get(DcMotor.class, left_back);
-        this.motor_right_back = this.hardwareMap.get(DcMotor.class, right_back);
-        this.hardwareMap.get(DcMotor.class, "motor");
+        this.motor_left_front = super.get(DcMotor.class, left_front);
+        this.motor_right_front = super.get(DcMotor.class, right_front);
+        this.motor_left_back = super.get(DcMotor.class, left_back);
+        this.motor_right_back = super.get(DcMotor.class, right_back);
+        super.get(DcMotor.class, "motor");
 
         // Set the motor orientation.
         if (!invertedDrive) {

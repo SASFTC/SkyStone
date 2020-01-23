@@ -7,10 +7,10 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 import static com.qualcomm.robotcore.util.Range.clip;
 
+
 public class LiftingSystem extends Extension {
 
     /* Fields */
-    private HardwareMap hardwareMap;
     private DcMotor liftingMotor;
     private Servo wristServo, grabbingServo;
 
@@ -31,17 +31,17 @@ public class LiftingSystem extends Extension {
                          String grabbingServo, double maxLiftingSpeed, double accel) {
 
         // Get hardwareMap to access components.
-        this.hardwareMap = hardwareMap;
+        super(hardwareMap);
 
         // Get motors and servos.
-        this.liftingMotor = this.hardwareMap.get(DcMotor.class, liftingMotor);
-        this.wristServo = this.hardwareMap.get(Servo.class, wristServo);
-        this.grabbingServo = this.hardwareMap.get(Servo.class, grabbingServo);
+        this.liftingMotor = super.get(DcMotor.class, liftingMotor);
+        this.wristServo = super.get(Servo.class, wristServo);
+        this.grabbingServo = super.get(Servo.class, grabbingServo);
 
         // Configure motors and servos.
         this.liftingMotor.setDirection(DcMotorSimple.Direction.FORWARD);
         this.liftingMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-//        this.liftingMotor.set
+        this.liftingMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         this.wristServo.scaleRange(0, 1);
         this.grabbingServo.scaleRange(0, 1);
@@ -59,6 +59,11 @@ public class LiftingSystem extends Extension {
 
     }
 
+    public void stop() {
+
+        this.liftingMotor.setPower(0);
+    }
+
     // up
     // down
 
@@ -67,17 +72,13 @@ public class LiftingSystem extends Extension {
         switch (d) {
 
             case OUT:
-
                 // Activate servo on the wrist to swing the arm outward.
                 this.wristServo.setPosition(1); // TODO: Determine angle value.
-
                 break;
 
             case IN:
-
                 // Activate servo on the wrist to swing the arm inward.
                 this.wristServo.setPosition(0); // TODO: Determine angle value.
-
                 break;
 
         }
@@ -88,17 +89,13 @@ public class LiftingSystem extends Extension {
         switch (g) {
 
             case GRAB:
-
                 // Activate servo on the wrist to swing the arm outward.
                 this.wristServo.setPosition(0.5); // TODO: Determine angle value.
-
                 break;
 
             case RELEASE:
-
                 // Activate servo on the wrist to swing the arm inward.
                 this.wristServo.setPosition(0); // TODO: Determine angle value.
-
                 break;
 
         }
