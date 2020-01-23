@@ -21,7 +21,7 @@ public class LiftingSystem extends Extension {
     public enum Grabber { GRAB, RELEASE };
 
     // TODO: Determine total steps to lift the arm, or use button to limit arm.
-    private final int LIFT_STEPS = 0;
+    private final int LIFT_STEPS = 10;
     private int currentLiftingStep = 0;
 
 
@@ -41,7 +41,7 @@ public class LiftingSystem extends Extension {
         // Configure motors and servos.
         this.liftingMotor.setDirection(DcMotorSimple.Direction.FORWARD);
         this.liftingMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        this.liftingMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        this.liftingMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         this.wristServo.scaleRange(0, 1);
         this.grabbingServo.scaleRange(0, 1);
@@ -54,9 +54,14 @@ public class LiftingSystem extends Extension {
 
     public void raise(double speed) {
 
-        // TODO: Limit the arm's travel, either through software or through buttons.
-        accelMotor(this.liftingMotor, speed);
+        this.liftingMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
+        if (this.liftingMotor.getCurrentPosition() <= LIFT_STEPS &&
+                this.liftingMotor.getCurrentPosition() >= 0) {
+            accelMotor(this.liftingMotor, speed);
+        } else {
+            this.stop();
+        }
     }
 
     public void stop() {
@@ -64,8 +69,27 @@ public class LiftingSystem extends Extension {
         this.liftingMotor.setPower(0);
     }
 
-    // up
-    // down
+    public void up() {
+
+        while (this.liftingMotor.getCurrentPosition() >= 0 &&
+                this.liftingMotor.getCurrentPosition() <= LIFT_STEPS) {
+
+            this.liftingMotor.setPower(this.maxLiftingSpeed);
+        }
+
+        this.stop();
+    }
+
+    public void down() {
+
+        while (this.liftingMotor.getCurrentPosition() >= 0 &&
+                this.liftingMotor.getCurrentPosition() <= LIFT_STEPS) {
+
+            this.liftingMotor.setPower(-this.maxLiftingSpeed);
+        }
+
+        this.stop();
+    }
 
     public void swingWrist(Direction d) {
 
