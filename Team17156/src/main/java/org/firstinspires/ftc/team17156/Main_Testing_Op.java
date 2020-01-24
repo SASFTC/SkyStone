@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.team17156.scotslib.hardware.drivetrain.MecanumDrivetrain;
+import org.firstinspires.ftc.team17156.scotslib.hardware.extension.FoundationHolder;
 import org.firstinspires.ftc.team17156.scotslib.hardware.extension.Intake;
 import org.firstinspires.ftc.team17156.scotslib.hardware.extension.LiftingSystem;
 
@@ -17,6 +18,7 @@ public class Main_Testing_Op extends OpMode {
     private MecanumDrivetrain dTrain;
     private Intake intake;
     private LiftingSystem liftingSystem;
+    private FoundationHolder foundationHolder;
 
 
     /*
@@ -35,6 +37,9 @@ public class Main_Testing_Op extends OpMode {
 
         this.liftingSystem = new LiftingSystem(hardwareMap, "lifting_motor",
                 "wrist_servo", "grabbing_servo", 1, 50);
+
+        this.foundationHolder = new FoundationHolder(hardwareMap, "left_foundation_servo",
+                "right_foundation_servo");
 
         // Telemetry.
         telemetry.addData("Status", "Initialized");
@@ -67,21 +72,28 @@ public class Main_Testing_Op extends OpMode {
         this.dTrain.driveJoystick(gamepad1.left_stick_x, gamepad1.left_stick_y, gamepad1.right_stick_x);
 
         // Intake.
-        if (gamepad1.a == true && gamepad1.b == false) {
+        if (gamepad1.a && !gamepad1.b) {
             this.intake.run(Intake.Direction.IN);
-        } else if (gamepad1.b == true && gamepad1.a == false) {
+        } else if (gamepad1.b && !gamepad1.a) {
             this.intake.run(Intake.Direction.OUT);
         } else {
             this.intake.run(Intake.Direction.STOP);
         }
 
         // Lifting System.
-        if (gamepad1.dpad_up == true && gamepad1.dpad_down == false) {
+        if (gamepad1.dpad_up && !gamepad1.dpad_down) {
             this.liftingSystem.raise(1);
-        } else if (gamepad1.dpad_down == true && gamepad1.dpad_up == false) {
+        } else if (gamepad1.dpad_down && !gamepad1.dpad_up) {
             this.liftingSystem.raise(-1);
         } else {
             this.liftingSystem.stop();
+        }
+
+        // Foundation Holder.
+        if (gamepad1.x && !gamepad1.y) {
+            this.foundationHolder.grab();
+        } else if (gamepad1.y && !gamepad1.x) {
+            this.foundationHolder.release();
         }
 
         // Telemetry.

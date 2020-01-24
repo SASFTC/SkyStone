@@ -20,8 +20,8 @@ public class LiftingSystem extends Extension {
     public enum Direction { OUT, IN };
     public enum Grabber { GRAB, RELEASE };
 
-    // TODO: Determine total steps to lift the arm, or use button to limit arm.
-    private final int LIFT_STEPS = 10;
+
+    private final int LIFT_STEPS = 10; // TODO: Determine total steps to lift the arm, or use button to limit arm.
     private int currentLiftingStep = 0;
 
 
@@ -71,6 +71,8 @@ public class LiftingSystem extends Extension {
 
     public void up() {
 
+        this.liftingMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
         while (this.liftingMotor.getCurrentPosition() >= 0 &&
                 this.liftingMotor.getCurrentPosition() <= LIFT_STEPS) {
 
@@ -81,6 +83,8 @@ public class LiftingSystem extends Extension {
     }
 
     public void down() {
+
+        this.liftingMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         while (this.liftingMotor.getCurrentPosition() >= 0 &&
                 this.liftingMotor.getCurrentPosition() <= LIFT_STEPS) {
