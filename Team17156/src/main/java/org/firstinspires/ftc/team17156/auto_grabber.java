@@ -33,6 +33,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+
 import org.firstinspires.ftc.team17156.scotslib.hardware.drivetrain.AutoGrabber;
 import org.firstinspires.ftc.team17156.scotslib.hardware.drivetrain.Intake;
 
@@ -74,6 +75,8 @@ public class auto_grabber extends OpMode {
 
         // Provide joystick input to driveTrain.
         auto_grabber.rise();
+
+
 //        driveTrain.drive(0.3, Math.PI/4, 0);
 
 

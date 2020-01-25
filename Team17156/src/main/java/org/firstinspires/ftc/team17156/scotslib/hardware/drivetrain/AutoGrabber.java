@@ -86,8 +86,8 @@ public class AutoGrabber {
         // Calculate each motor's speed.
 
         // Apply the desired power to each motor.
-//        accelMotor(this.intake1, clip(v1, -1, 1));
-//        accelMotor(this.intake2, clip(v2, -1, 1));
+  //     accelMotor(this.intake1, clip(v1, -1, 1));
+  //      accelMotor(this.intake2, clip(v2, -1, 1));
         this.arm.setPosition(0.4);
         this.hand.setPosition(0.5);
     }
