@@ -108,8 +108,7 @@ public class MecanumDrivetrain extends Drivetrain {
         double v1 = this.speed * Math.sin(this.angle + Math.PI / 4) - this.rotation;    // Left front motor.
         double v2 = this.speed * Math.cos(this.angle + Math.PI / 4) + this.rotation;    // Right front motor.
         double v3 = this.speed * Math.cos(this.angle + Math.PI / 4) - this.rotation;    // Left back motor.
-        double v4 = this.speed * Math.sin(this.angle + Math.PI / 4) + this.rotation;    // Right back motor.
-
+        double v4 = this.speed * Math.sin(this.angle + Math.PI / 4) + this.rotation;    // Right back
         // Apply the desired power to each motor.
         accelMotor(this.motor_left_front, clip(v1, -1, 1));
         accelMotor(this.motor_right_front, clip(v2, -1, 1));
@@ -117,7 +116,7 @@ public class MecanumDrivetrain extends Drivetrain {
         accelMotor(this.motor_right_back, clip(v4, -1, 1));
     }
     public void drive(double speed, double angle, double rotation, double distance){
-        Math.pow(this.wheelDiameter/2, 2)*Math.PI
+//        Math.pow(this.wheelDiameter/2, 2)*Math.PI
         // Constrain speed to max speed.
         this.speed = clip(speed, -this.maxSpeed, this.maxSpeed);
         this.angle = angle;

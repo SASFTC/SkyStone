@@ -5,6 +5,8 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
+
 import static com.qualcomm.robotcore.util.Range.clip;
 
 
@@ -26,26 +28,27 @@ public class LiftingSystem extends Extension {
     ;
 
     // TODO: Determine total steps to lift the arm, or use button to limit arm.
-    private final int LIFT_STEPS = 10;
-    private int currentLiftingStep = 0;
-    private final int brickTall = 2;
-    private final int correction = 1;
+    private final int brickTall = 20;
+    private final int correction = 0;
+    private double liftingMotorStep;
+    private HardwareMap hardwareMap;
 
 
     /* Methods */
     public LiftingSystem(HardwareMap hardwareMap, String liftingMotor, String wristServo,
-                         String grabbingServo, double maxLiftingSpeed, double accel) {
+                         String grabbingServo, double maxLiftingSpeed, double accel, double liftingMotorStep) {
 
         // Get hardwareMap to access components.
         super(hardwareMap);
-
+        this.hardwareMap = hardwareMap;
+        this.liftingMotorStep = liftingMotorStep;
         // Get motors and servos.
         this.liftingMotor = super.get(DcMotor.class, liftingMotor);
         this.wristServo = super.get(Servo.class, wristServo);
         this.grabbingServo = super.get(Servo.class, grabbingServo);
 
         // Configure motors and servos.
-        this.liftingMotor.setDirection(DcMotorSimple.Direction.FORWARD);
+        this.liftingMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         this.liftingMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         this.liftingMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
@@ -56,57 +59,34 @@ public class LiftingSystem extends Extension {
         this.maxLiftingSpeed = maxLiftingSpeed;
         this.accel = accel;
     }
+    public LiftingSystem(HardwareMap hardwareMap, String liftingMotor, double maxLiftingSpeed, double accel, double liftingMotorStep) {
 
-    public void goBricks(double speed, int bricks) {
+        // Get hardwareMap to access components.
+        super(hardwareMap);
+        this.hardwareMap = hardwareMap;
+        this.liftingMotorStep = liftingMotorStep;
+        // Get motors and servos.
+        this.liftingMotor = super.get(DcMotor.class, liftingMotor);
 
-        this.liftingMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        double realTimeCorrection = (bricks == 0) ? 0 : correction;
-        if (this.liftingMotor.getCurrentPosition() <= LIFT_STEPS && this.liftingMotor.getCurrentPosition() <= bricks * brickTall + realTimeCorrection &&
-                this.liftingMotor.getCurrentPosition() >= 0) {
-            accelMotor(this.liftingMotor, speed);
-        } else {
-            this.stop();
-        }
+        // Configure motors and servos.
+        this.liftingMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        this.liftingMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        this.liftingMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+
+        // Save metrics.
+        this.maxLiftingSpeed = maxLiftingSpeed;
+        this.accel = accel;
     }
 
-
-    public void raise(double speed) {
-
-        this.liftingMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-
-        if (this.liftingMotor.getCurrentPosition() <= LIFT_STEPS &&
-                this.liftingMotor.getCurrentPosition() >= 0) {
-            accelMotor(this.liftingMotor, speed);
-        } else {
-            this.stop();
-        }
+    public void goBricks(double speed, int bricks, Telemetry telemetry) {
+        TurnAngle raisingMotor = new TurnAngle(hardwareMap, this.liftingMotor, 1.0, 100, this.liftingMotorStep);
+        raisingMotor.turnTo(speed, bricks*brickTall+correction, telemetry);
     }
 
     public void stop() {
 
         this.liftingMotor.setPower(0);
-    }
-
-    public void up() {
-
-        while (this.liftingMotor.getCurrentPosition() >= 0 &&
-                this.liftingMotor.getCurrentPosition() <= LIFT_STEPS) {
-
-            this.liftingMotor.setPower(this.maxLiftingSpeed);
-        }
-
-        this.stop();
-    }
-
-    public void down() {
-
-        while (this.liftingMotor.getCurrentPosition() >= 0 &&
-                this.liftingMotor.getCurrentPosition() <= LIFT_STEPS) {
-
-            this.liftingMotor.setPower(-this.maxLiftingSpeed);
-        }
-
-        this.stop();
     }
 
     public void swingWrist(Direction d) {
@@ -124,6 +104,9 @@ public class LiftingSystem extends Extension {
                 break;
 
         }
+    }
+    public double getMotorPosition(){
+        return liftingMotor.getCurrentPosition();
     }
 
     public void grabber(Grabber g) {

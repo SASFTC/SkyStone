@@ -17,7 +17,7 @@ public class TurnAngle extends Extension {
 
     private double maxSpeed;
     private double accel;
-    private int motorStep;
+    private double motorStep;
 
 
     // TODO: Determine total steps to lift the arm, or use button to limit arm.
@@ -25,7 +25,7 @@ public class TurnAngle extends Extension {
 
 
     /* Methods */
-    public TurnAngle(HardwareMap hardwareMap, String motor, double maxSpeed, double accel, int motorStep) {
+    public TurnAngle(HardwareMap hardwareMap, String motor, double maxSpeed, double accel, double motorStep) {
 
         // Get hardwareMap to access components.
         super(hardwareMap);
@@ -44,7 +44,7 @@ public class TurnAngle extends Extension {
         this.motorStep = motorStep;
     }
 
-    public TurnAngle(HardwareMap hardwareMap, DcMotor motor, double maxSpeed, double accel, int motorStep) {
+    public TurnAngle(HardwareMap hardwareMap, DcMotor motor, double maxSpeed, double accel, double motorStep) {
 
         // Get hardwareMap to access components.
         super(hardwareMap);
@@ -63,19 +63,28 @@ public class TurnAngle extends Extension {
         this.motorStep = motorStep;
     }
 
-    public void turnTo(double speed, int angle) {
+    public void turnTo(double speed, int angle, Telemetry telemetry) {
 
 //        angle = angle * 1680/360;
 
 
 
-
+//        this.motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         this.motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        this.motor.setTargetPosition(angle*this.motorStep/360);
+        this.motor.setTargetPosition((int)(angle*this.motorStep/360));
         this.motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        this.motor.setPower(speed);
+        telemetry.addData("pos", Double.toString(this.motor.getCurrentPosition()));
+        telemetry.addData("pos", (int)(angle*this.motorStep/360));
+        telemetry.update();
+        this.motor.setPower(.01);
+//        this.motor.setPower(speed);
 
         while (this.motor.isBusy()){
+            telemetry.addData("pos", Double.toString(this.motor.getCurrentPosition()));
+            telemetry.addData("pos", (int)(angle*this.motorStep/360));
+            telemetry.addData("pos", "still here");
+            telemetry.addData("pos", this.motor.getPower());
+            telemetry.update();
         }
 
         this.motor.setPower(0);
