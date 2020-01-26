@@ -1,12 +1,16 @@
 package org.firstinspires.ftc.team17156;
 
-class Vector3{
+class Color {
     private int red;
     private int green;
     private int blue;
     private String hex;
 
-    public Vector3(int red, int green, int blue) {
+    public Color(){
+
+    }
+
+    public Color(int red, int green, int blue) {
         this.red = red;
         this.green = green;
         this.blue = blue;
@@ -40,5 +44,30 @@ class Vector3{
     public String getHex() {
         hex = String.format("#%02x%02x%02x", this.red, this.green, this.blue);
         return hex;
+    }
+
+    public void setFromHex(String hex){
+        this.red = getColor ( hex ).red;
+        this.green = getColor ( hex ).green;
+        this.blue = getColor ( hex ).blue;
+    }
+
+    public static Color getColor(String colorStr) {
+        return new Color (
+                Integer.valueOf( colorStr.substring( 1, 3 ), 16 ),
+                Integer.valueOf( colorStr.substring( 3, 5 ), 16 ),
+                Integer.valueOf( colorStr.substring( 5, 7 ), 16 ) );
+    }
+
+    public void setRed(int red) {
+        this.red = red;
+    }
+
+    public void setGreen(int green) {
+        this.green = green;
+    }
+
+    public void setBlue(int blue) {
+        this.blue = blue;
     }
 }
