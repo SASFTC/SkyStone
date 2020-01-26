@@ -27,19 +27,21 @@ public class Main_Testing_Op extends OpMode {
     @Override
     public void init() {
 
-        // Initialize all components.
+        // Initialize all components. WORKS
         this.dTrain = new MecanumDrivetrain(hardwareMap, "front_left_motor",
                 "front_right_motor", "back_left_motor",
-                "back_right_motor", 100, 1);
+                "back_right_motor", 100, 0.5);
 
+        // WORKS
         this.intake = new Intake(hardwareMap, "left_intake_motor",
                 "right_intake_motor", 1);
 
+        // WORKS
         this.liftingSystem = new LiftingSystem(hardwareMap, "lifting_motor",
                 "wrist_servo", "grabbing_servo", 1);
 
-        this.foundationHolder = new FoundationHolder(hardwareMap, "left_foundation_servo",
-                "right_foundation_servo");
+//        this.foundationHolder = new FoundationHolder(hardwareMap, "left_foundation_servo",
+//                "right_foundation_servo");
 
         // Telemetry.
         telemetry.addData("Status", "Initialized");
@@ -81,20 +83,26 @@ public class Main_Testing_Op extends OpMode {
         }
 
         // Lifting System.
+        this.liftingSystem.raise(gamepad1.right_trigger-gamepad1.left_trigger);
         if (gamepad1.dpad_up && !gamepad1.dpad_down) {
-            this.liftingSystem.raise(1);
+            this.liftingSystem.swingWrist(LiftingSystem.Direction.OUT);
         } else if (gamepad1.dpad_down && !gamepad1.dpad_up) {
-            this.liftingSystem.raise(-1);
+            this.liftingSystem.swingWrist(LiftingSystem.Direction.IN);
         } else {
             this.liftingSystem.stop();
         }
+        if (gamepad1.right_bumper && !gamepad1.left_bumper) {
+            this.liftingSystem.grabber(LiftingSystem.Grabber.GRAB);
+        } else if (gamepad1.left_bumper && !gamepad1.right_bumper) {
+            this.liftingSystem.grabber(LiftingSystem.Grabber.RELEASE);
+        }
 
         // Foundation Holder.
-        if (gamepad1.x && !gamepad1.y) {
-            this.foundationHolder.grab();
-        } else if (gamepad1.y && !gamepad1.x) {
-            this.foundationHolder.release();
-        }
+//        if (gamepad1.x && !gamepad1.y) {
+//            this.foundationHolder.grab();
+//        } else if (gamepad1.y && !gamepad1.x) {
+//            this.foundationHolder.release();
+//        }
 
         // Telemetry.
         telemetry.addData("Status", "Run Time: " + runtime.toString());

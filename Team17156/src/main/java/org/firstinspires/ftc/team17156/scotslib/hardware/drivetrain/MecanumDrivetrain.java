@@ -2,6 +2,7 @@ package org.firstinspires.ftc.team17156.scotslib.hardware.drivetrain;
 
 
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import static com.qualcomm.robotcore.util.Range.clip;
@@ -42,10 +43,32 @@ public class MecanumDrivetrain extends Drivetrain {
         super(hardwareMap);
 
         // Set the motors' instances.
-        this.motor_left_front = hardwareMap.get(DcMotor.class, left_front);
-        this.motor_right_front = hardwareMap.get(DcMotor.class, right_front);
-        this.motor_left_back = hardwareMap.get(DcMotor.class, left_back);
-        this.motor_right_back = hardwareMap.get(DcMotor.class, right_back);
+        this.motor_left_front = super.get(DcMotor.class, left_front);
+        this.motor_right_front = super.get(DcMotor.class, right_front);
+        this.motor_left_back = super.get(DcMotor.class, left_back);
+        this.motor_right_back = super.get(DcMotor.class, right_back);
+
+
+        // Configure the motors.
+        this.motor_left_front.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        this.motor_left_front.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        this.motor_left_front.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        this.motor_left_front.setDirection(DcMotorSimple.Direction.REVERSE);
+
+        this.motor_right_front.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        this.motor_right_front.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        this.motor_right_front.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        this.motor_right_front.setDirection(DcMotorSimple.Direction.FORWARD);
+
+        this.motor_left_back.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        this.motor_left_back.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        this.motor_left_back.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        this.motor_left_back.setDirection(DcMotorSimple.Direction.FORWARD);
+
+        this.motor_right_back.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        this.motor_right_back.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        this.motor_right_back.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        this.motor_right_back.setDirection(DcMotorSimple.Direction.REVERSE);
 
 
         // Set other params.
@@ -136,9 +159,7 @@ public class MecanumDrivetrain extends Drivetrain {
      */
     private void accelMotor(DcMotor motor, double setpoint) {
 
-        // NOTE: getPower() returns the power in the interval [0, 1].
-        // Therefore, we should use the abs value of setpoint [-1, 1].
-//        setpoint = Math.abs(setpoint);
+        motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         // If current power is bigger than what the acceleration limit allows (either way).
         if (this.accel < Math.abs(motor.getPower() - setpoint)) {
