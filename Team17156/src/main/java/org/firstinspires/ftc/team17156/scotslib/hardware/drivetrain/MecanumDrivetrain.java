@@ -5,6 +5,8 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+import org.firstinspires.ftc.team17156.scotslib.hardware.extension.TurnAngle;
+
 import static com.qualcomm.robotcore.util.Range.clip;
 
 
@@ -22,6 +24,11 @@ public class MecanumDrivetrain extends Drivetrain {
     private double angle = 0;               // -pi <=     angle     <= pi
     private double rotation = 0;            //  -1 <=    rotation   <= 1
     private double wheelDiameter = 10.2;
+    private int motorStepLF = 1680;
+    private int motorStepLB = 1680;
+    private int motorStepRF = 1680;
+    private int motorStepRB = 1680;
+    private HardwareMap hardwareMap;
 
 
 
@@ -41,8 +48,9 @@ public class MecanumDrivetrain extends Drivetrain {
     public MecanumDrivetrain(HardwareMap hardwareMap, String left_front, String right_front,
                              String left_back, String right_back, double accel, double maxSpeed,
                              boolean invertedDrive) {
-        // Get HardwareMap
         super(hardwareMap);
+        // Get HardwareMap
+        this.hardwareMap = hardwareMap;
 
         // Set the motors' instances.
         this.motor_left_front = super.get(DcMotor.class, left_front);
@@ -117,8 +125,10 @@ public class MecanumDrivetrain extends Drivetrain {
         accelMotor(this.motor_right_back, clip(v4, -1, 1));
     }
     public void drive(double speed, double angle, double rotation, double distance){
-        Math.pow(this.wheelDiameter/2, 2)*Math.PI
+        double angleToRotate = distance/(Math.pow(this.wheelDiameter/2, 2)*Math.PI/360);
         // Constrain speed to max speed.
+        TurnAngle angleTurnMotorLF = new TurnAngle(this.hardwareMap, this.motor_left_front, 1.0, 100.0, this.motorStepLF);
+        angleTurnMotorLF.turnTo();
         this.speed = clip(speed, -this.maxSpeed, this.maxSpeed);
         this.angle = angle;
         this.rotation = clip(-rotation, -this.maxSpeed, this.maxSpeed);
@@ -134,6 +144,8 @@ public class MecanumDrivetrain extends Drivetrain {
         accelMotor(this.motor_right_front, clip(v2, -1, 1));
         accelMotor(this.motor_left_back, clip(v3, -1, 1));
         accelMotor(this.motor_right_back, clip(v4, -1, 1));
+
+        this.drive(0, 0, rotation);
 
     }
 
