@@ -22,6 +22,7 @@ public class Main_Testing_Op extends OpMode {
     private TurnAngle testingMotor;
     private boolean isRightTriggerReleased = true;
     private boolean isLeftTriggerReleased = true;
+    private LiftingSystem liftingSys;
 
 
     /*
@@ -44,6 +45,8 @@ public class Main_Testing_Op extends OpMode {
         // Telemetry.
 
         telemetry.addData("Status", "Initialized");
+        liftingSys = new LiftingSystem(hardwareMap, "lifting_motor", 1.0, 100, 537.6);
+
 
     }
 
@@ -61,10 +64,9 @@ public class Main_Testing_Op extends OpMode {
     @Override
     public void start() {
 //        this.testingMotor.turn(0.25, 90);
-
-        this.testingMotor = new TurnAngle(hardwareMap, "testing_motor", 1.0, 100, 1680);
+//        this.testingMotor = new TurnAngle(hardwareMap, "testing_motor", 1.0, 100, 1680);
         runtime.reset();
-        this.testingMotor.turnTo(1.0, 0);
+//        this.testingMotor.turnTo(1.0, 0);
     }
 
     /*
@@ -72,37 +74,19 @@ public class Main_Testing_Op extends OpMode {
      */
     @Override
     public void loop() {
-        telemetry.addData("position", Double.toString(testingMotor.getMotorPosition()));
-        // Drivetrain.
-//        this.dTrain.driveJoystick(gamepad1.left_stick_x, gamepad1.left_stick_y, gamepad1.right_stick_x);
-//
-//        // Intake.
-//        if (gamepad1.a && !gamepad1.b) {
-//            this.intake.run(Intake.Direction.IN);
-//        } else if (gamepad1.b && !gamepad1.a) {
-//            this.intake.run(Intake.Direction.OUT);
-//        } else {
-//            this.intake.run(Intake.Direction.STOP);
-//        }
-//
-//        // Lifting System.
-//        if (isPressed(gamepad1.right_trigger) && !isPressed(gamepad1.left_trigger) && isRightTriggerReleased) {
-//            isRightTriggerReleased = false;
-//            this.liftingSystem.goBricks(1.0, 1);
-//        } else if (!isPressed(gamepad1.right_trigger) && isPressed(gamepad1.left_trigger) && isLeftTriggerReleased) {
-//            isLeftTriggerReleased = false;
-//            this.liftingSystem.goBricks(1.0, -1);
-//        } else {
-//            if (!isLeftTriggerReleased)
-//                isLeftTriggerReleased = true;
-//            if (!isRightTriggerReleased)
-//                isRightTriggerReleased = true;
-//            this.liftingSystem.stop();
-//        }
-
-
-
-        // Telemetry.
+//        telemetry.addData("position", Double.toString(liftingSys.getMotorPosition()));
+        if (isPressed(gamepad2.right_trigger) && !isPressed(gamepad2.left_trigger)) {
+            isLeftTriggerReleased = false;
+            isRightTriggerReleased = true;
+            liftingSys.goBricks(0.5, 1, telemetry);
+        } else if (isPressed(gamepad2.left_trigger) && !isPressed(gamepad2.right_trigger)) {
+            isRightTriggerReleased = false;
+            isLeftTriggerReleased = true;
+            liftingSys.goBricks(0.5, -1, telemetry);
+        } else {
+            isRightTriggerReleased = true;
+            isLeftTriggerReleased = true;
+        }
         telemetry.addData("Status", "Run Time: " + runtime.toString());
         telemetry.update();
     }
@@ -114,7 +98,8 @@ public class Main_Testing_Op extends OpMode {
     public void stop() {
 
     }
-    public boolean isPressed(float triggerValue){
+
+    public boolean isPressed(float triggerValue) {
         return triggerValue > 0.2;
     }
 }

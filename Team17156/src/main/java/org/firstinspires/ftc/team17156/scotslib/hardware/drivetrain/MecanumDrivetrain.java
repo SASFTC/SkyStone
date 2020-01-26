@@ -128,7 +128,7 @@ public class MecanumDrivetrain extends Drivetrain {
         double angleToRotate = distance/(Math.pow(this.wheelDiameter/2, 2)*Math.PI/360);
         // Constrain speed to max speed.
         TurnAngle angleTurnMotorLF = new TurnAngle(this.hardwareMap, this.motor_left_front, 1.0, 100.0, this.motorStepLF);
-        angleTurnMotorLF.turnTo();
+//        angleTurnMotorLF.turnTo();
         this.speed = clip(speed, -this.maxSpeed, this.maxSpeed);
         this.angle = angle;
         this.rotation = clip(-rotation, -this.maxSpeed, this.maxSpeed);
