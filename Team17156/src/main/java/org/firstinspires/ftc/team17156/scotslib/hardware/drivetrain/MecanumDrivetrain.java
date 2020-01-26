@@ -2,7 +2,6 @@ package org.firstinspires.ftc.team17156.scotslib.hardware.drivetrain;
 
 
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import static com.qualcomm.robotcore.util.Range.clip;
@@ -38,44 +37,16 @@ public class MecanumDrivetrain extends Drivetrain {
      * @param maxSpeed:    The maximum speed of the robot.
      */
     public MecanumDrivetrain(HardwareMap hardwareMap, String left_front, String right_front,
-                             String left_back, String right_back, double accel, double maxSpeed,
-                             boolean invertedDrive) {
+                             String left_back, String right_back, double accel, double maxSpeed) {
         // Get HardwareMap
         super(hardwareMap);
 
         // Set the motors' instances.
-        this.motor_left_front = super.get(DcMotor.class, left_front);
-        this.motor_right_front = super.get(DcMotor.class, right_front);
-        this.motor_left_back = super.get(DcMotor.class, left_back);
-        this.motor_right_back = super.get(DcMotor.class, right_back);
-        super.get(DcMotor.class, "motor");
+        this.motor_left_front = hardwareMap.get(DcMotor.class, left_front);
+        this.motor_right_front = hardwareMap.get(DcMotor.class, right_front);
+        this.motor_left_back = hardwareMap.get(DcMotor.class, left_back);
+        this.motor_right_back = hardwareMap.get(DcMotor.class, right_back);
 
-        // Set the motor orientation.
-        if (!invertedDrive) {
-            this.motor_left_front.setDirection(DcMotorSimple.Direction.FORWARD);
-            this.motor_right_front.setDirection(DcMotorSimple.Direction.REVERSE);
-            this.motor_left_back.setDirection(DcMotorSimple.Direction.FORWARD);
-            this.motor_right_back.setDirection(DcMotorSimple.Direction.REVERSE);
-        } else {
-            this.motor_left_front.setDirection(DcMotorSimple.Direction.REVERSE);
-            this.motor_right_front.setDirection(DcMotorSimple.Direction.FORWARD);
-            this.motor_left_back.setDirection(DcMotorSimple.Direction.REVERSE);
-            this.motor_right_back.setDirection(DcMotorSimple.Direction.FORWARD);
-        }
-
-
-        // Turn on PID for the motors' velocity control.
-//        this.motor_left_front.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-//        this.motor_right_front.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-//        this.motor_left_back.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-//        this.motor_right_back.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
-
-        // Set ZeroPowerBehavior to BRAKE, so that any forces acting on the robot will not cause movement.
-        this.motor_left_front.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        this.motor_right_front.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        this.motor_left_back.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        this.motor_right_back.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         // Set other params.
         this.accel = accel;
@@ -83,7 +54,7 @@ public class MecanumDrivetrain extends Drivetrain {
     }
 
     public MecanumDrivetrain(HardwareMap hardwareMap, String left_front, String right_front, String left_back, String right_back) {
-        this(hardwareMap, left_front, right_front, left_back, right_back, 0.5, 1, false);
+        this(hardwareMap, left_front, right_front, left_back, right_back, 0.5, 1);
     }
 
 

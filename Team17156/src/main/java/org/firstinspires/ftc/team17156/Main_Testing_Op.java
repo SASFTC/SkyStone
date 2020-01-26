@@ -30,13 +30,13 @@ public class Main_Testing_Op extends OpMode {
         // Initialize all components.
         this.dTrain = new MecanumDrivetrain(hardwareMap, "front_left_motor",
                 "front_right_motor", "back_left_motor",
-                "back_right_motor", 100, 1, false);
+                "back_right_motor", 100, 1);
 
         this.intake = new Intake(hardwareMap, "left_intake_motor",
                 "right_intake_motor", 1);
 
         this.liftingSystem = new LiftingSystem(hardwareMap, "lifting_motor",
-                "wrist_servo", "grabbing_servo", 1, 50);
+                "wrist_servo", "grabbing_servo", 1);
 
         this.foundationHolder = new FoundationHolder(hardwareMap, "left_foundation_servo",
                 "right_foundation_servo");
