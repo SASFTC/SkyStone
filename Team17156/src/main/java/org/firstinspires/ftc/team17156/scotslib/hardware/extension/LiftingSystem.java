@@ -28,7 +28,7 @@ public class LiftingSystem extends Extension {
     ;
 
     // TODO: Determine total steps to lift the arm, or use button to limit arm.
-    private final int brickTall = 20;
+    private final int brickTall = 360;
     private final int correction = 0;
     private double liftingMotorStep;
     private HardwareMap hardwareMap;

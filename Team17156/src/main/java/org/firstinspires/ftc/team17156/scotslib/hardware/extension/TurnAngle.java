@@ -76,8 +76,8 @@ public class TurnAngle extends Extension {
         telemetry.addData("pos", Double.toString(this.motor.getCurrentPosition()));
         telemetry.addData("pos", (int)(angle*this.motorStep/360));
         telemetry.update();
-        this.motor.setPower(.01);
-//        this.motor.setPower(speed);
+//        this.motor.setPower(.01);
+        this.motor.setPower(speed);
 
         while (this.motor.isBusy()){
             telemetry.addData("pos", Double.toString(this.motor.getCurrentPosition()));

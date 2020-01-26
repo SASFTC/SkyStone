@@ -64,7 +64,6 @@ public class Main_Testing_Op extends OpMode {
     @Override
     public void start() {
 //        this.testingMotor.turn(0.25, 90);
-        liftingSys.goBricks(0.3, 2, telemetry);
 //        this.testingMotor = new TurnAngle(hardwareMap, "testing_motor", 1.0, 100, 1680);
         runtime.reset();
 //        this.testingMotor.turnTo(1.0, 0);
@@ -76,6 +75,7 @@ public class Main_Testing_Op extends OpMode {
     @Override
     public void loop() {
 //        telemetry.addData("position", Double.toString(liftingSys.getMotorPosition()));
+        if ()
         telemetry.addData("Status", "Run Time: " + runtime.toString());
         telemetry.update();
     }
