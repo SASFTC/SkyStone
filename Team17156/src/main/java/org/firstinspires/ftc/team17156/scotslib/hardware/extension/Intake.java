@@ -9,11 +9,13 @@ import static com.qualcomm.robotcore.util.Range.clip;
 public class Intake extends Extension {
 
     /* Fields */
-    private HardwareMap hardwareMap;
     private DcMotor motor_left, motor_right;
 
     private double speed;
 
+    /**
+     * Enum to store the different option for the intake mechanism, either in or out.
+     */
     public enum Direction {
         IN, OUT, STOP
     }
@@ -30,11 +32,11 @@ public class Intake extends Extension {
     public Intake (HardwareMap hardwareMap, String motor_left, String motor_right, double speed) {
 
         // Get the HardwareMap.
-        this.hardwareMap = hardwareMap;
+        super(hardwareMap);
 
         // Set the motors' instances.
-        this.motor_left = this.hardwareMap.get(DcMotor.class, motor_left);
-        this.motor_right = this.hardwareMap.get(DcMotor.class, motor_right);
+        this.motor_left = super.get(DcMotor.class, motor_left);
+        this.motor_right = super.get(DcMotor.class, motor_right);
 
         // Set the motors' direction.
         this.motor_left.setDirection(DcMotorSimple.Direction.FORWARD);
@@ -54,15 +56,21 @@ public class Intake extends Extension {
      */
     public void run(Direction d) {
 
-        if (d.equals(Direction.IN)) {
-            this.motor_left.setPower(this.speed);
-            this.motor_right.setPower(this.speed);
-        } else if (d.equals(Direction.OUT)) {
-            this.motor_left.setPower(-this.speed);
-            this.motor_right.setPower(-this.speed);
-        } else {
-            this.motor_left.setPower(0);
-            this.motor_right.setPower(0);
+        switch (d) {
+
+            case IN:
+                this.motor_left.setPower(this.speed);
+                this.motor_right.setPower(this.speed);
+                break;
+
+            case OUT:
+                this.motor_left.setPower(-this.speed);
+                this.motor_right.setPower(-this.speed);
+                break;
+
+            default:
+                this.motor_left.setPower(0);
+                this.motor_right.setPower(0);
         }
 
     }

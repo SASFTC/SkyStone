@@ -2,11 +2,13 @@ package org.firstinspires.ftc.team17156;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.team17156.scotslib.hardware.drivetrain.MecanumDrivetrain;
 import org.firstinspires.ftc.team17156.scotslib.hardware.extension.Intake;
 import org.firstinspires.ftc.team17156.scotslib.hardware.extension.LiftingSystem;
+import org.firstinspires.ftc.team17156.scotslib.hardware.extension.TurnAngle;
 
 @TeleOp(name = "Main Testing Op", group = "Test")
 public class Main_Testing_Op extends OpMode {
@@ -17,6 +19,9 @@ public class Main_Testing_Op extends OpMode {
     private MecanumDrivetrain dTrain;
     private Intake intake;
     private LiftingSystem liftingSystem;
+    private TurnAngle testingMotor;
+    private boolean isRightTriggerReleased = true;
+    private boolean isLeftTriggerReleased = true;
 
 
     /*
@@ -26,17 +31,18 @@ public class Main_Testing_Op extends OpMode {
     public void init() {
 
         // Initialize all components.
-        this.dTrain = new MecanumDrivetrain(hardwareMap, "front_left_motor",
-                "front_right_motor", "back_left_motor",
-                "back_right_motor", 100, 1, false);
-
-        this.intake = new Intake(hardwareMap, "left_intake_motor",
-                "right_intake_motor", 1);
-
-        this.liftingSystem = new LiftingSystem(hardwareMap, "lifting_motor",
-                "wrist_servo", "grabbing_servo", 1, 50);
+//        this.dTrain = new MecanumDrivetrain(hardwareMap, "front_left_motor",
+//                "front_right_motor", "back_left_motor",
+//                "back_right_motor", 100, 1, false);
+//
+//        this.intake = new Intake(hardwareMap, "left_intake_motor",
+//                "right_intake_motor", 1);
+//
+//        this.liftingSystem = new LiftingSystem(hardwareMap, "lifting_motor",
+//                "wrist_servo", "grabbing_servo", 1, 50);
 
         // Telemetry.
+
         telemetry.addData("Status", "Initialized");
 
     }
@@ -54,7 +60,11 @@ public class Main_Testing_Op extends OpMode {
      */
     @Override
     public void start() {
+//        this.testingMotor.turn(0.25, 90);
+
+        this.testingMotor = new TurnAngle(hardwareMap, "testing_motor", 1.0, 100, 1680);
         runtime.reset();
+        this.testingMotor.turnTo(1.0, 0);
     }
 
     /*
@@ -62,30 +72,39 @@ public class Main_Testing_Op extends OpMode {
      */
     @Override
     public void loop() {
-
+        telemetry.addData("position", Double.toString(testingMotor.getMotorPosition()));
         // Drivetrain.
-        this.dTrain.driveJoystick(gamepad1.left_stick_x, gamepad1.left_stick_y, gamepad1.right_stick_x);
+//        this.dTrain.driveJoystick(gamepad1.left_stick_x, gamepad1.left_stick_y, gamepad1.right_stick_x);
+//
+//        // Intake.
+//        if (gamepad1.a && !gamepad1.b) {
+//            this.intake.run(Intake.Direction.IN);
+//        } else if (gamepad1.b && !gamepad1.a) {
+//            this.intake.run(Intake.Direction.OUT);
+//        } else {
+//            this.intake.run(Intake.Direction.STOP);
+//        }
+//
+//        // Lifting System.
+//        if (isPressed(gamepad1.right_trigger) && !isPressed(gamepad1.left_trigger) && isRightTriggerReleased) {
+//            isRightTriggerReleased = false;
+//            this.liftingSystem.goBricks(1.0, 1);
+//        } else if (!isPressed(gamepad1.right_trigger) && isPressed(gamepad1.left_trigger) && isLeftTriggerReleased) {
+//            isLeftTriggerReleased = false;
+//            this.liftingSystem.goBricks(1.0, -1);
+//        } else {
+//            if (!isLeftTriggerReleased)
+//                isLeftTriggerReleased = true;
+//            if (!isRightTriggerReleased)
+//                isRightTriggerReleased = true;
+//            this.liftingSystem.stop();
+//        }
 
-        // Intake.
-        if (gamepad1.a && !gamepad1.b) {
-            this.intake.run(Intake.Direction.IN);
-        } else if (gamepad1.b && !gamepad1.a) {
-            this.intake.run(Intake.Direction.OUT);
-        } else {
-            this.intake.run(Intake.Direction.STOP);
-        }
 
-        // Lifting System.
-        if (gamepad1.dpad_up && !gamepad1.dpad_down) {
-            this.liftingSystem.raise(1);
-        } else if (gamepad1.dpad_down && !gamepad1.dpad_up) {
-            this.liftingSystem.raise(-1);
-        } else {
-            this.liftingSystem.stop();
-        }
 
         // Telemetry.
         telemetry.addData("Status", "Run Time: " + runtime.toString());
+        telemetry.update();
     }
 
     /*
@@ -94,5 +113,8 @@ public class Main_Testing_Op extends OpMode {
     @Override
     public void stop() {
 
+    }
+    public boolean isPressed(float triggerValue){
+        return triggerValue > 0.2;
     }
 }

@@ -7,23 +7,29 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 import static com.qualcomm.robotcore.util.Range.clip;
 
+
 public class LiftingSystem extends Extension {
 
     /* Fields */
-    private HardwareMap hardwareMap;
     private DcMotor liftingMotor;
     private Servo wristServo, grabbingServo;
 
     private double maxLiftingSpeed;
     private double accel;
 
-    public enum Direction { OUT, IN };
-    public enum Grabber { GRAB, RELEASE };
+    public enum Direction {OUT, IN}
+
+    ;
+
+    public enum Grabber {GRAB, RELEASE}
+
+    ;
 
     // TODO: Determine total steps to lift the arm, or use button to limit arm.
-    private final int LIFT_STEPS = 0;
+    private final int LIFT_STEPS = 10;
     private int currentLiftingStep = 0;
-
+    private final int brickTall = 2;
+    private final int correction = 1;
 
 
     /* Methods */
@@ -31,17 +37,17 @@ public class LiftingSystem extends Extension {
                          String grabbingServo, double maxLiftingSpeed, double accel) {
 
         // Get hardwareMap to access components.
-        this.hardwareMap = hardwareMap;
+        super(hardwareMap);
 
         // Get motors and servos.
-        this.liftingMotor = this.hardwareMap.get(DcMotor.class, liftingMotor);
-        this.wristServo = this.hardwareMap.get(Servo.class, wristServo);
-        this.grabbingServo = this.hardwareMap.get(Servo.class, grabbingServo);
+        this.liftingMotor = super.get(DcMotor.class, liftingMotor);
+        this.wristServo = super.get(Servo.class, wristServo);
+        this.grabbingServo = super.get(Servo.class, grabbingServo);
 
         // Configure motors and servos.
         this.liftingMotor.setDirection(DcMotorSimple.Direction.FORWARD);
         this.liftingMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-//        this.liftingMotor.set
+        this.liftingMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         this.wristServo.scaleRange(0, 1);
         this.grabbingServo.scaleRange(0, 1);
@@ -51,33 +57,70 @@ public class LiftingSystem extends Extension {
         this.accel = accel;
     }
 
+    public void goBricks(double speed, int bricks) {
+
+        this.liftingMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        double realTimeCorrection = (bricks == 0) ? 0 : correction;
+        if (this.liftingMotor.getCurrentPosition() <= LIFT_STEPS && this.liftingMotor.getCurrentPosition() <= bricks * brickTall + realTimeCorrection &&
+                this.liftingMotor.getCurrentPosition() >= 0) {
+            accelMotor(this.liftingMotor, speed);
+        } else {
+            this.stop();
+        }
+    }
+
 
     public void raise(double speed) {
 
-        // TODO: Limit the arm's travel, either through software or through buttons.
-        accelMotor(this.liftingMotor, speed);
+        this.liftingMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
+        if (this.liftingMotor.getCurrentPosition() <= LIFT_STEPS &&
+                this.liftingMotor.getCurrentPosition() >= 0) {
+            accelMotor(this.liftingMotor, speed);
+        } else {
+            this.stop();
+        }
     }
 
-    // up
-    // down
+    public void stop() {
+
+        this.liftingMotor.setPower(0);
+    }
+
+    public void up() {
+
+        while (this.liftingMotor.getCurrentPosition() >= 0 &&
+                this.liftingMotor.getCurrentPosition() <= LIFT_STEPS) {
+
+            this.liftingMotor.setPower(this.maxLiftingSpeed);
+        }
+
+        this.stop();
+    }
+
+    public void down() {
+
+        while (this.liftingMotor.getCurrentPosition() >= 0 &&
+                this.liftingMotor.getCurrentPosition() <= LIFT_STEPS) {
+
+            this.liftingMotor.setPower(-this.maxLiftingSpeed);
+        }
+
+        this.stop();
+    }
 
     public void swingWrist(Direction d) {
 
         switch (d) {
 
             case OUT:
-
                 // Activate servo on the wrist to swing the arm outward.
                 this.wristServo.setPosition(1); // TODO: Determine angle value.
-
                 break;
 
             case IN:
-
                 // Activate servo on the wrist to swing the arm inward.
                 this.wristServo.setPosition(0); // TODO: Determine angle value.
-
                 break;
 
         }
@@ -88,17 +131,13 @@ public class LiftingSystem extends Extension {
         switch (g) {
 
             case GRAB:
-
                 // Activate servo on the wrist to swing the arm outward.
                 this.wristServo.setPosition(0.5); // TODO: Determine angle value.
-
                 break;
 
             case RELEASE:
-
                 // Activate servo on the wrist to swing the arm inward.
                 this.wristServo.setPosition(0); // TODO: Determine angle value.
-
                 break;
 
         }
