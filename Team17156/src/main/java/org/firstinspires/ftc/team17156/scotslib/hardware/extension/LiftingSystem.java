@@ -5,13 +5,13 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
-import org.firstinspires.ftc.team17156.scotslib.hardware.component.motor.DcMotorCustom;
+import org.firstinspires.ftc.team17156.scotslib.hardware.component.motor.DcMotorSA;
 
 
 public class LiftingSystem extends Extension {
 
     /* Fields */
-    private DcMotorCustom liftingMotor;
+    private DcMotorSA liftingMotor;
     private Servo wristServo, grabbingServo;
 
     private double maxLiftingSpeed = 1;
@@ -33,8 +33,8 @@ public class LiftingSystem extends Extension {
         super(hardwareMap);
 
         // Get motors and servos.
-        this.liftingMotor = new DcMotorCustom(super.get(DcMotor.class, liftingMotor),
-                DcMotorCustom.Mode.BY_ANGLE, DcMotorSimple.Direction.FORWARD,
+        this.liftingMotor = new DcMotorSA(super.get(DcMotor.class, liftingMotor),
+                DcMotorSA.Mode.BY_ANGLE, DcMotorSimple.Direction.FORWARD,
                 DcMotor.ZeroPowerBehavior.BRAKE);
         this.wristServo = super.get(Servo.class, wristServo);
         this.grabbingServo = super.get(Servo.class, grabbingServo);
