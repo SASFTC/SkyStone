@@ -57,7 +57,7 @@ public class MecanumDrivetrain extends Drivetrain {
         this.motor_right_front = super.get(DcMotor.class, right_front);
         this.motor_left_back = super.get(DcMotor.class, left_back);
         this.motor_right_back = super.get(DcMotor.class, right_back);
-        super.get(DcMotor.class, "motor");
+//        super.get(DcMotor.class, "motor");
 
         // Set the motor orientation.
         if (!invertedDrive) {
@@ -68,8 +68,8 @@ public class MecanumDrivetrain extends Drivetrain {
         } else {
             this.motor_left_front.setDirection(DcMotorSimple.Direction.REVERSE);
             this.motor_right_front.setDirection(DcMotorSimple.Direction.FORWARD);
-            this.motor_left_back.setDirection(DcMotorSimple.Direction.REVERSE);
-            this.motor_right_back.setDirection(DcMotorSimple.Direction.FORWARD);
+            this.motor_left_back.setDirection(DcMotorSimple.Direction.FORWARD);
+            this.motor_right_back.setDirection(DcMotorSimple.Direction.REVERSE);
         }
 
 
@@ -106,6 +106,7 @@ public class MecanumDrivetrain extends Drivetrain {
      * @param rotation: The rotational speed [-1, 1]. Clockwise is positive, and counterclockwise is negative.
      */
     public void drive(double speed, double angle, double rotation) {
+        rotation *= 0.45;
 
         // Constrain speed to max speed.
         this.speed = clip(speed, -this.maxSpeed, this.maxSpeed);
@@ -159,13 +160,13 @@ public class MecanumDrivetrain extends Drivetrain {
      * @param y:        The y component of the joystick.
      * @param rotation: The x component of the secondary joystick, controlling rotation.
      */
-    public void driveJoystick(double x, double y, double rotation) {
+    public void driveJoystick(double x, double y, double rotation, double speedFactor, double rotationFactor) {
 
         // Calculate the necessary values.
-        double speed = Math.hypot(x, y);
+        double speed = Math.hypot(x, y)*speedFactor;
         // NOTE: in our controller, the Y axis is inverted – 1 is back and -1 is forward, so we invert it.
         double angle = Math.atan2(-y, -x) - Math.PI / 2;   // Make angle = 0 when joystick is forward.
-
+        rotation *= rotationFactor;
         // Call the main driving method.
         this.drive(speed, angle, rotation);
     }

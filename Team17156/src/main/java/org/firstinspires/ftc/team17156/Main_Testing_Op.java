@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.team17156.scotslib.hardware.drivetrain.MecanumDrivetrain;
 import org.firstinspires.ftc.team17156.scotslib.hardware.extension.Intake;
+import org.firstinspires.ftc.team17156.scotslib.hardware.extension.IntakeServo;
 import org.firstinspires.ftc.team17156.scotslib.hardware.extension.LiftingSystem;
 import org.firstinspires.ftc.team17156.scotslib.hardware.extension.TurnAngle;
 
@@ -16,13 +17,18 @@ public class Main_Testing_Op extends OpMode {
 
     /* Fields */
     private ElapsedTime runtime = new ElapsedTime();
-    private MecanumDrivetrain dTrain;
+    private MecanumDrivetrain machanumDrive;
     private Intake intake;
     private LiftingSystem liftingSystem;
     private TurnAngle testingMotor;
     private boolean isRightTriggerReleased = true;
     private boolean isLeftTriggerReleased = true;
     private LiftingSystem liftingSys;
+    private double speedFactor = 0.6;
+    private boolean isStickPressed = false;
+    private IntakeServo intakeServo;
+    private double rotationFactor = 0.6;
+    private Intake.Direction rotationDirection = Intake.Direction.STOP;
 
 
     /*
@@ -46,6 +52,12 @@ public class Main_Testing_Op extends OpMode {
 
         telemetry.addData("Status", "Initialized");
         liftingSys = new LiftingSystem(hardwareMap, "lifting_motor", 1.0, 100, 537.6);
+        machanumDrive = new MecanumDrivetrain(hardwareMap, "front_left_motor",
+                "front_right_motor", "back_left_motor",
+                "back_right_motor", 100, 1, true);
+        this.intake = new Intake(hardwareMap, "left_intake_motor",
+                "right_intake_motor", 1);
+        this.intakeServo = new IntakeServo(hardwareMap, "intake_servo");
 
 
     }
@@ -79,7 +91,7 @@ public class Main_Testing_Op extends OpMode {
             isLeftTriggerReleased = false;
             isRightTriggerReleased = true;
             liftingSys.goBricks(0.5, 1, telemetry);
-        } else if (isPressed(gamepad2.left_trigger) && !isPressed(gamepad2.right_trigger)) { 
+        } else if (isPressed(gamepad2.left_trigger) && !isPressed(gamepad2.right_trigger)) {
             isRightTriggerReleased = false;
             isLeftTriggerReleased = true;
             liftingSys.goBricks(0.5, -1, telemetry);
@@ -87,12 +99,56 @@ public class Main_Testing_Op extends OpMode {
             isRightTriggerReleased = true;
             isLeftTriggerReleased = true;
         }
-        if (gamepad2.left_bumper && !gamepad2.right_bumper){
+
+        if (isPressed(gamepad1.right_trigger) && !isPressed(gamepad1.left_trigger)){
+            intake.run(Intake.Direction.IN);
+        } else if (isPressed(gamepad1.left_trigger) && !isPressed(gamepad1.right_trigger)){
+            intake.run(Intake.Direction.OUT);
+        } else {
+            intake.run(Intake.Direction.STOP);
+        }
+        if (gamepad2.left_bumper && !gamepad2.right_bumper) {
             liftingSys.swingWrist(LiftingSystem.Direction.IN);
-        } else if (gamepad2.right_bumper && !gamepad2.left_bumper){
+        } else if (gamepad2.right_bumper && !gamepad2.left_bumper) {
             liftingSys.swingWrist(LiftingSystem.Direction.OUT);
         }
-        if (gamepad2.a)
+        if (isSwang(gamepad2.right_stick_y) == 1){
+            intakeServo.getServo().setPosition(0.73);
+        } else if (isSwang(gamepad2.right_stick_y) == -1){
+            intakeServo.getServo().setPosition(0.16);
+        }
+        telemetry.addData("direction", gamepad2.right_stick_y);
+//        if (gamepad1.left_stick_button && !isStickPressed){
+        if (gamepad1.left_stick_button){
+            speedFactor = 1.0;
+//            isStickPressed = false;
+//            if (speedFactor == 1.0){
+//                speedFactor = 0.6;
+//            } else {
+//                speedFactor = 1.0;
+//            }
+        } else {
+            speedFactor = 0.6;
+//            isStickPressed = true;
+        }
+
+        if (gamepad1.right_stick_button){
+            rotationFactor = 0.45;
+        } else {
+            rotationFactor = 0.6;
+        }
+
+        if (gamepad2.y) {
+            intakeServo.run();
+        }
+        if (gamepad1.left_bumper && !gamepad1.right_bumper){
+            machanumDrive.driveJoystick(gamepad1.left_stick_x, gamepad1.left_stick_y, 0.2, speedFactor, rotationFactor);
+        } else if (gamepad1.right_bumper && !gamepad1.left_bumper){
+            machanumDrive.driveJoystick(gamepad1.left_stick_x, gamepad1.left_stick_y, -0.2, speedFactor, rotationFactor);
+        } else {
+            machanumDrive.driveJoystick(gamepad1.left_stick_x, gamepad1.left_stick_y, gamepad1.right_stick_x, speedFactor, rotationFactor);
+        }
+
         telemetry.addData("Status", "Run Time: " + runtime.toString());
         telemetry.update();
     }
@@ -107,5 +163,15 @@ public class Main_Testing_Op extends OpMode {
 
     public boolean isPressed(float triggerValue) {
         return triggerValue > 0.2;
+    }
+
+    public int isSwang(float stickValue) {
+        if (stickValue < -0.2){
+            return 1;
+        } else if (stickValue > 0.2) {
+            return -1;
+        } else {
+            return 0;
+        }
     }
 }

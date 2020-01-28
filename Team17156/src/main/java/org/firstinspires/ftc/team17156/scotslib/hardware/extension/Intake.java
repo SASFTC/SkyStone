@@ -39,8 +39,8 @@ public class Intake extends Extension {
         this.motor_right = super.get(DcMotor.class, motor_right);
 
         // Set the motors' direction.
-        this.motor_left.setDirection(DcMotorSimple.Direction.FORWARD);
-        this.motor_right.setDirection(DcMotorSimple.Direction.REVERSE);
+        this.motor_left.setDirection(DcMotorSimple.Direction.REVERSE);
+        this.motor_right.setDirection(DcMotorSimple.Direction.FORWARD);
 
         // Set ZeroPowerBehavior to BRAKE, so that any forces acting on the intake will not cause movement.
         this.motor_left.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -67,6 +67,10 @@ public class Intake extends Extension {
                 this.motor_left.setPower(-this.speed);
                 this.motor_right.setPower(-this.speed);
                 break;
+
+            case STOP:
+                this.motor_left.setPower(0);
+                this.motor_right.setPower(0);
 
             default:
                 this.motor_left.setPower(0);
