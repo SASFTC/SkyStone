@@ -32,7 +32,6 @@ public class IntakeServo extends Extension {
         // Set the motors' instances.
         intakeServo = super.get(Servo.class, intakeServoName);
         intakeServo.scaleRange(0, 1);
-        this.run(-1);
     }
 
     /**

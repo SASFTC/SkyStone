@@ -28,6 +28,8 @@ public class Main_Testing_Op extends OpMode {
     private boolean isStickPressed = false;
     private IntakeServo intakeServo;
     private double rotationFactor = 0.6;
+    private double intakeServoOut = 0.73;
+    private double intakeServoIn = 0.16;
     private Intake.Direction rotationDirection = Intake.Direction.STOP;
 
 
@@ -51,13 +53,16 @@ public class Main_Testing_Op extends OpMode {
         // Telemetry.
 
         telemetry.addData("Status", "Initialized");
-        liftingSys = new LiftingSystem(hardwareMap, "lifting_motor", 1.0, 100, 537.6);
+        liftingSys = new LiftingSystem(hardwareMap, "lifting_motor","wrist_servo", "grabbing_servo", 1.0, 100, 537.6);
         machanumDrive = new MecanumDrivetrain(hardwareMap, "front_left_motor",
                 "front_right_motor", "back_left_motor",
                 "back_right_motor", 100, 1, true);
         this.intake = new Intake(hardwareMap, "left_intake_motor",
                 "right_intake_motor", 1);
         this.intakeServo = new IntakeServo(hardwareMap, "intake_servo");
+        this.intakeServo.getServo().setPosition(this.intakeServoIn);
+        this.liftingSys.getWristServo().setPosition(0.43);
+        this.liftingSys.getGrabbingServo().setPosition(0.40);
 
 
     }
@@ -107,15 +112,16 @@ public class Main_Testing_Op extends OpMode {
         } else {
             intake.run(Intake.Direction.STOP);
         }
-        if (gamepad2.left_bumper && !gamepad2.right_bumper) {
-            liftingSys.swingWrist(LiftingSystem.Direction.IN);
-        } else if (gamepad2.right_bumper && !gamepad2.left_bumper) {
+        if (gamepad2.right_bumper && !gamepad2.left_bumper) {
+            intakeServo.getServo().setPosition(intakeServoOut);
+            intakeServo.getServo().setPosition(intakeServoIn);
+            liftingSys.grabber(LiftingSystem.Grabber.GRAB);
             liftingSys.swingWrist(LiftingSystem.Direction.OUT);
         }
         if (isSwang(gamepad2.right_stick_y) == 1){
-            intakeServo.getServo().setPosition(0.73);
+            intakeServo.getServo().setPosition(intakeServoOut);
         } else if (isSwang(gamepad2.right_stick_y) == -1){
-            intakeServo.getServo().setPosition(0.16);
+            intakeServo.getServo().setPosition(intakeServoIn);
         }
         telemetry.addData("direction", gamepad2.right_stick_y);
 //        if (gamepad1.left_stick_button && !isStickPressed){

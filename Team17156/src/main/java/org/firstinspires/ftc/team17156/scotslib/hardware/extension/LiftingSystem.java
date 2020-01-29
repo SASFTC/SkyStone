@@ -95,12 +95,12 @@ public class LiftingSystem extends Extension {
 
             case OUT:
                 // Activate servo on the wrist to swing the arm outward.
-                this.wristServo.setPosition(1); // TODO: Determine angle value.
+                this.wristServo.setPosition(0); // TODO: Determine angle value.
                 break;
 
             case IN:
                 // Activate servo on the wrist to swing the arm inward.
-                this.wristServo.setPosition(0); // TODO: Determine angle value.
+                this.wristServo.setPosition(0.32); // TODO: Determine angle value.
                 break;
 
         }
@@ -153,5 +153,11 @@ public class LiftingSystem extends Extension {
 
         newSpeed = clip(newSpeed, -this.maxLiftingSpeed, this.maxLiftingSpeed);
         motor.setPower(newSpeed);
+    }
+    public Servo getWristServo(){
+        return wristServo;
+    }
+    public Servo getGrabbingServo(){
+        return grabbingServo;
     }
 }

@@ -39,7 +39,7 @@ public class servo_testing extends OpMode {
 //                "wrist_servo", "grabbing_servo", 1, 50);
 
         // Telemetry.
-        this.testingServo = hardwareMap.get(Servo.class, "intake_servo");
+        this.testingServo = hardwareMap.get(Servo.class, "wrist_servo");
         this.testingServo.scaleRange(0, 1);
 
 
@@ -70,10 +70,7 @@ public class servo_testing extends OpMode {
     public void loop() {
         telemetry.addData("haha", "haha");
         telemetry.update();
-        testingServo.setPosition(0.16);
-
-        testingServo.setPosition(0.73);
-        testingServo.setPosition(0.16);
+        testingServo.setPosition(0.4);
 
     }
     /*
