@@ -7,6 +7,6 @@ public class SAConstants {
 
     public static final double DC_MOTOR_MINIMUM_POWER = 0.25;
 
-    public static final double DRIVETRAIN_ACCELERATION = 1.5;
-    public static final double DRIVETRAIN_DECELERATION = 2.5;
+    public static final double DC_MOTOR_ACCELERATION = 0.01; // 1.5
+    public static final double DC_MOTOR_DECELERATION = 1.0; // 2.5
 }

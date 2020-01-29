@@ -8,6 +8,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.team17156.scotslib.configuration.SAConstants;
 
 import static com.qualcomm.robotcore.util.Range.clip;
+import static org.firstinspires.ftc.team17156.scotslib.configuration.SAConstants.DC_MOTOR_ACCELERATION;
+import static org.firstinspires.ftc.team17156.scotslib.configuration.SAConstants.DC_MOTOR_DECELERATION;
 
 public class DcMotorSA {
 
@@ -17,10 +19,12 @@ public class DcMotorSA {
     private static final double MAX_POWER = 1;
     private static final double MIN_POWER = -1;
 
-    private double acceleration, deceleration;
+    private double acceleration = DC_MOTOR_ACCELERATION;
+    private double deceleration = DC_MOTOR_DECELERATION;
     private double currentPower, targetPower;
     private double minimumPower = SAConstants.DC_MOTOR_MINIMUM_POWER;
-    private int currentPosition;
+
+    private Mode mode;
 
 
     // Enums.
@@ -29,6 +33,15 @@ public class DcMotorSA {
 
 
     /* Methods */
+    public DcMotorSA(DcMotorImplEx motor, Mode mode) {
+
+        this.motor = motor;
+        this.mode = mode;
+
+        this.setMode(this.mode);
+    }
+
+
 
     // FOR ACCEL:
     public double getCurrentPower() {
@@ -89,8 +102,20 @@ public class DcMotorSA {
         this.motor.setDirection(direction);
     }
 
-    public synchronized void setMode(Mode mode) {
-        // TODO: Set mode appropriately.
+    public synchronized void setMode(Mode mode) { // TODO: Set mode appropriately.
+
+        switch (mode) {
+
+            case BY_ANGLE:
+                this.motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                this.motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                break;
+
+            case BY_VELOCITY:
+                this.motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                this.motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                break;
+        }
     }
 
     public synchronized void setAcceleration(double acceleration, double deceleration) {
@@ -126,7 +151,18 @@ public class DcMotorSA {
 
     public synchronized void update() { // THIS SHOULD TAKE CARE OF EVERYTHING THAT REQUIRES A LOOP
 
-        // TODO: PID for the stepper mode?
+        switch (this.mode) {
+
+            case BY_ANGLE:
+                this.updateStepper();
+                this.updatePower();
+                break;
+
+            case BY_VELOCITY:
+                this.motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                this.updatePower();
+                break;
+        }
     }
 
     private synchronized void updatePower() {
@@ -178,7 +214,7 @@ public class DcMotorSA {
         }
 
         // Finally, after determining the new currentPower, clip it and apply it.
-        this.currentPower = clip(this.currentPosition, this.MIN_POWER, this.MAX_POWER);
+        this.currentPower = clip(this.currentPower, this.MIN_POWER, this.MAX_POWER);
         this.setPower(this.currentPower);
 
     }
@@ -193,17 +229,22 @@ public class DcMotorSA {
 
     // FOR STEPPER:
     public void runToPosition(int position) {
-        // TODO
+
+        this.motor.setTargetPosition(position);
+        this.motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        this.targetPower = 1;
+
     }
 
-    public void rotateAngle(double angle) {
-        // TODO
-    }
+//    public void rotateAngle(double angle) {
+//        // TODO
+//    }
 
-    public synchronized int getAbsolutePosition() {
-        // TODO
-        return 0;
-    }
+//    public synchronized int getAbsolutePosition() {
+//        // TODO
+//        return 0;
+//    }
 
 
 

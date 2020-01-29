@@ -24,8 +24,7 @@ public class DcMotorControllerSA implements Runnable {
 
     public void addMotor(DcMotorSA motor) {
 
-        // Add motor to array
-        // .
+        // Add motor to array.
         this.motors[motorCount] = motor;
         this.motorCount++;
     }
@@ -38,7 +37,8 @@ public class DcMotorControllerSA implements Runnable {
 
             // Iterate through every motor and call update().
             for (DcMotorSA motor: this.motors) {
-                motor.update();
+                if (motor!=null)
+                    motor.update();
             }
 
             // Sleep to refresh rate.
@@ -69,7 +69,8 @@ public class DcMotorControllerSA implements Runnable {
 
         // Stop all motors.
         for (DcMotorSA motor: this.motors) {
-            motor.hardStop();
+            if (motor!=null )
+                motor.hardStop();
         }
     }
 }
