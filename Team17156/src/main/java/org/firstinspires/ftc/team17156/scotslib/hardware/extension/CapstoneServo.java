@@ -1,19 +1,16 @@
 package org.firstinspires.ftc.team17156.scotslib.hardware.extension;
 
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
-import static com.qualcomm.robotcore.util.Range.clip;
 import static java.lang.Thread.sleep;
 
-public class IntakeServo extends Extension {
+public class CapstoneServo extends Extension {
 
     /* Fields */
-    private Servo intakeServo;
-    private double retractValue = 0.15;
-    private double pushValue = 0.7;
+    private Servo capstoneServo;
+    private double holdValue = 0.15;
+    private double putValue = 0.7;
 
 
     /* Methods */
@@ -26,20 +23,20 @@ public class IntakeServo extends Extension {
      * @param motor_right: The right motor's name.
      * @param speed:       The speed at which the intake should work [-1, 1].
      */
-    public IntakeServo(HardwareMap hardwareMap, String intakeServoName) {
+    public CapstoneServo(HardwareMap hardwareMap, String capstoneServoName) {
 
         // Get the HardwareMap.
         super(hardwareMap);
 
         // Set the motors' instances.
-        intakeServo = super.get(Servo.class, intakeServoName);
-        intakeServo.scaleRange(0, 1);
-        this.run(Direction.RETRACT);
+        capstoneServo = super.get(Servo.class, capstoneServoName);
+        capstoneServo.scaleRange(0, 1);
+//        this.run(Direction.HOLD);
     }
 
 
     public enum Direction {
-        RETRACT, PUSH
+        HOLD, PUT
     }
 
     /**
@@ -49,26 +46,23 @@ public class IntakeServo extends Extension {
      */
     public void run(Direction d) {
         switch (d) {
-            case RETRACT:
-                intakeServo.setPosition(retractValue);
-            case PUSH:
-                intakeServo.setPosition(pushValue);
+            case HOLD:
+                capstoneServo.setPosition(holdValue);
+            case PUT:
+                capstoneServo.setPosition(putValue);
             default:
-                intakeServo.setPosition(retractValue);
+                capstoneServo.setPosition(holdValue);
         }
     }
 
     public Servo getServo() {
-        return this.intakeServo;
+        return this.capstoneServo;
     }
 
     public void run() {
-        this.run(Direction.PUSH);
-        try {
-            sleep(200);
-        } catch (InterruptedException e) {
-        }
-        this.run(Direction.RETRACT);
+        this.run(Direction.PUT);
+        try {sleep(200);} catch (InterruptedException e) {}
+        this.run(Direction.HOLD);
     }
 
 

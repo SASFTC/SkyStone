@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 import static com.qualcomm.robotcore.util.Range.clip;
+import static java.lang.Thread.sleep;
 
 
 public class TurnAngle extends Extension {
@@ -63,7 +64,7 @@ public class TurnAngle extends Extension {
         this.motorStep = motorStep;
     }
 
-    public void turnTo(double speed, int angle, Telemetry telemetry) {
+    public void turnTo(double speed, double angle) {
 
 //        angle = angle * 1680/360;
 
@@ -73,18 +74,19 @@ public class TurnAngle extends Extension {
         this.motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         this.motor.setTargetPosition((int)(angle*this.motorStep/360));
         this.motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        telemetry.addData("pos", Double.toString(this.motor.getCurrentPosition()));
-        telemetry.addData("pos", (int)(angle*this.motorStep/360));
-        telemetry.update();
+//        telemetry.addData("pos", Double.toString(this.motor.getCurrentPosition()));
+//        telemetry.addData("pos", (int)(angle*this.motorStep/360));
+//        telemetry.update();
 //        this.motor.setPower(.01);
         this.motor.setPower(speed);
 
         while (this.motor.isBusy()){
-            telemetry.addData("pos", Double.toString(this.motor.getCurrentPosition()));
-            telemetry.addData("pos", (int)(angle*this.motorStep/360));
-            telemetry.addData("pos", "still here");
-            telemetry.addData("pos", this.motor.getPower());
-            telemetry.update();
+//            telemetry.addData("pos", Double.toString(this.motor.getCurrentPosition()));
+//            telemetry.addData("pos", angle);
+//            telemetry.update();
+
+            try{sleep(10);}
+            catch (InterruptedException e){}
         }
 
         this.motor.setPower(0);

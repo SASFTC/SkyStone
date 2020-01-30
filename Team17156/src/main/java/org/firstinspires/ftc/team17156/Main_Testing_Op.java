@@ -2,14 +2,16 @@ package org.firstinspires.ftc.team17156;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.team17156.scotslib.hardware.drivetrain.MecanumDrivetrain;
+import org.firstinspires.ftc.team17156.scotslib.hardware.extension.CapstoneServo;
 import org.firstinspires.ftc.team17156.scotslib.hardware.extension.Intake;
 import org.firstinspires.ftc.team17156.scotslib.hardware.extension.IntakeServo;
 import org.firstinspires.ftc.team17156.scotslib.hardware.extension.LiftingSystem;
 import org.firstinspires.ftc.team17156.scotslib.hardware.extension.TurnAngle;
+
+import static java.lang.Thread.sleep;
 
 @TeleOp(name = "Main Testing Op", group = "Test")
 public class Main_Testing_Op extends OpMode {
@@ -27,11 +29,13 @@ public class Main_Testing_Op extends OpMode {
     private double speedFactor = 0.6;
     private boolean isStickPressed = false;
     private IntakeServo intakeServo;
+    private CapstoneServo capstoneServo;
     private double rotationFactor = 0.6;
     private double intakeServoOut = 0.73;
     private double intakeServoIn = 0.16;
+    private int currentBricks = 0;
     private Intake.Direction rotationDirection = Intake.Direction.STOP;
-
+    private boolean firstTimeLoop = true;
 
     /*
      * Code to run ONCE when the driver hits INIT
@@ -53,6 +57,7 @@ public class Main_Testing_Op extends OpMode {
         // Telemetry.
 
         telemetry.addData("Status", "Initialized");
+
         liftingSys = new LiftingSystem(hardwareMap, "lifting_motor","wrist_servo", "grabbing_servo", 1.0, 100, 537.6);
         machanumDrive = new MecanumDrivetrain(hardwareMap, "front_left_motor",
                 "front_right_motor", "back_left_motor",
@@ -60,9 +65,8 @@ public class Main_Testing_Op extends OpMode {
         this.intake = new Intake(hardwareMap, "left_intake_motor",
                 "right_intake_motor", 1);
         this.intakeServo = new IntakeServo(hardwareMap, "intake_servo");
+        this.capstoneServo = new CapstoneServo(hardwareMap, "capstone_servo");
         this.intakeServo.getServo().setPosition(this.intakeServoIn);
-        this.liftingSys.getWristServo().setPosition(0.43);
-        this.liftingSys.getGrabbingServo().setPosition(0.40);
 
 
     }
@@ -80,11 +84,22 @@ public class Main_Testing_Op extends OpMode {
      */
     @Override
     public void start() {
+
 //        this.testingMotor.turn(0.25, 90);
 //        this.testingMotor = new TurnAngle(hardwareMap, "testing_motor", 1.0, 100, 1680);
         runtime.reset();
 //        this.testingMotor.turnTo(1.0, 0);
+        Thread liftingThreadObject = new Thread(new liftingThread(liftingSys, intakeServo, 6));
+//        liftingThreadObject.start();
+        capstoneServo.getServo().setPosition(0.7);
+        try {sleep(200);} catch (InterruptedException e) {}
+        capstoneServo.getServo().setPosition(0.15);
+
     }
+
+
+
+
 
     /*
      * Code to run REPEATEDLY after the driver hits PLAY but before they hit STOP
@@ -95,11 +110,11 @@ public class Main_Testing_Op extends OpMode {
         if (isPressed(gamepad2.right_trigger) && !isPressed(gamepad2.left_trigger)) {
             isLeftTriggerReleased = false;
             isRightTriggerReleased = true;
-            liftingSys.goBricks(0.5, 1, telemetry);
+            liftingSys.goBricks(0.5, 1, true);
         } else if (isPressed(gamepad2.left_trigger) && !isPressed(gamepad2.right_trigger)) {
             isRightTriggerReleased = false;
             isLeftTriggerReleased = true;
-            liftingSys.goBricks(0.5, -1, telemetry);
+            liftingSys.goBricks(0.5, -1, false);
         } else {
             isRightTriggerReleased = true;
             isLeftTriggerReleased = true;
@@ -157,6 +172,16 @@ public class Main_Testing_Op extends OpMode {
 
         telemetry.addData("Status", "Run Time: " + runtime.toString());
         telemetry.update();
+
+
+        if (gamepad2.b) {
+            capstoneServo.run(CapstoneServo.Direction.PUT);
+        }
+        if (gamepad2.a) {
+            capstoneServo.run(CapstoneServo.Direction.HOLD);
+        }
+
+
     }
 
     /*

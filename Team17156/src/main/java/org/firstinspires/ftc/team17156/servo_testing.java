@@ -18,6 +18,9 @@ public class servo_testing extends OpMode {
     /* Fields */
     private ElapsedTime runtime = new ElapsedTime();
     private Servo testingServo;
+    private double testValue = 0.5;
+    private boolean isLeftRelease = false;
+    private boolean isRightRelease = false;
 
 
 
@@ -39,7 +42,7 @@ public class servo_testing extends OpMode {
 //                "wrist_servo", "grabbing_servo", 1, 50);
 
         // Telemetry.
-        this.testingServo = hardwareMap.get(Servo.class, "wrist_servo");
+        this.testingServo = hardwareMap.get(Servo.class, "capstone_servo");
         this.testingServo.scaleRange(0, 1);
 
 
@@ -68,9 +71,19 @@ public class servo_testing extends OpMode {
      */
     @Override
     public void loop() {
-        telemetry.addData("haha", "haha");
+        if (gamepad1.left_bumper && !isLeftRelease){
+            isLeftRelease = true;
+            testValue -= 0.01;
+        } else if (gamepad1.right_bumper && !isRightRelease){
+            isRightRelease = true;
+            testValue += 0.01;
+        } else if (!gamepad1.right_bumper && !gamepad1.left_bumper) {
+            isRightRelease = false;
+            isLeftRelease = false;
+        }
+        telemetry.addData("value", testValue);
         telemetry.update();
-        testingServo.setPosition(0.4);
+        testingServo.setPosition(testValue);
 
     }
     /*

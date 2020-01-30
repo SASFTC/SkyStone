@@ -28,8 +28,8 @@ public class LiftingSystem extends Extension {
     ;
 
     // TODO: Determine total steps to lift the arm, or use button to limit arm.
-    private final int brickTall =  360;
-    private final int correction = 90;
+    private final int brickTall = 326;
+    private final int correction = 140;
     private double liftingMotorStep;
     private HardwareMap hardwareMap;
 
@@ -79,9 +79,13 @@ public class LiftingSystem extends Extension {
         this.accel = accel;
     }
 
-    public void goBricks(double speed, int bricks, Telemetry telemetry) {
+    public void goBricks(double speed, double bricks, boolean addCorrection) {
         TurnAngle raisingMotor = new TurnAngle(hardwareMap, this.liftingMotor, 1.0, 100, this.liftingMotorStep);
-        raisingMotor.turnTo(speed, bricks*brickTall+correction, telemetry);
+        double newCorrection = (addCorrection) ? correction:0;
+        double finalAngle = (bricks < 0) ? (bricks*brickTall-newCorrection):(bricks*brickTall+newCorrection);
+//        telemetry.addData("correction", finalAngle);
+//        telemetry.update();
+        raisingMotor.turnTo(speed, finalAngle);
     }
 
     public void stop() {
