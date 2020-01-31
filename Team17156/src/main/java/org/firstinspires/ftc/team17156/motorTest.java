@@ -82,7 +82,7 @@ public class motorTest extends OpMode {
 //        this.testingMotor.turn(0.25, 90);
 //        this.testingMotor = new TurnAngle(hardwareMap, "testing_motor", 1.0, 100, 1680);
         runtime.reset();
-//        this.testingMotor.turnTo(1.0, 0);
+//        this.testingMotor.turn(1.0, 0);
     }
 
 
@@ -97,11 +97,11 @@ public class motorTest extends OpMode {
         if (isPressed(gamepad1.right_trigger) && !isPressed(gamepad1.left_trigger) && isRightTriggerReleased){
             isRightTriggerReleased = false;
             angleIncrement += 50;
-            angleMotor.turnTo(0.4, 50);
+            angleMotor.turn(0.4, 50, false);
         } else if (isPressed(gamepad1.left_trigger) && !isPressed(gamepad1.right_trigger)){
             isLeftTriggerReleased = false;
             angleIncrement -= 50;
-            angleMotor.turnTo(0.4, -50);
+            angleMotor.turn(0.4, -50, false);
         } else if (!isPressed(gamepad1.left_trigger) && !isPressed(gamepad1.right_trigger)){
             isLeftTriggerReleased = true;
             isRightTriggerReleased = true;

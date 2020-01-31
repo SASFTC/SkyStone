@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.team17156.scotslib.hardware.drivetrain.motorThread;
 
 import static com.qualcomm.robotcore.util.Range.clip;
 import static java.lang.Thread.sleep;
@@ -19,6 +20,7 @@ public class TurnAngle extends Extension {
     private double maxSpeed;
     private double accel;
     private double motorStep;
+    private Thread threadingMotor;
 
 
     // TODO: Determine total steps to lift the arm, or use button to limit arm.
@@ -64,50 +66,26 @@ public class TurnAngle extends Extension {
         this.motorStep = motorStep;
     }
 
-    public void turnTo(double speed, double angle) {
-
-//        angle = angle * 1680/360;
-
-
-
-//        this.motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        this.motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        this.motor.setTargetPosition((int)(angle*this.motorStep/360));
-        this.motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-//        telemetry.addData("pos", Double.toString(this.motor.getCurrentPosition()));
-//        telemetry.addData("pos", (int)(angle*this.motorStep/360));
-//        telemetry.update();
-//        this.motor.setPower(.01);
-        this.motor.setPower(speed);
-
-        while (this.motor.isBusy()){
-//            telemetry.addData("pos", Double.toString(this.motor.getCurrentPosition()));
-//            telemetry.addData("pos", angle);
-//            telemetry.update();
-
-            try{sleep(10);}
-            catch (InterruptedException e){}
+    public void turn(double speed, double stepAngle, boolean usingStep) {
+        if (!usingStep){
+            stepAngle = (stepAngle * this.motorStep / 360);
         }
 
+
+        this.motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        this.motor.setTargetPosition((int)stepAngle);
+        this.motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        this.motor.setPower(speed);
+        while (this.motor.isBusy()) {}
         this.motor.setPower(0);
 
-//        this.motor.setPower(-1);
-
-//        if (this.motor.getCurrentPosition() <= LIFT_STEPS && this.motor.getCurrentPosition() <= angle &&
-//                this.motor.getCurrentPosition() >= 0) {
-//            accelMotor(this.motor, speed);
-//        } else {
-//            this.stop();
-//        }
-
-//        this.motor.setPower(speed);
-//        this.motor.setTargetPosition(angle * 1680/360);
-//        this.motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-//        stop();
+//        threadingMotor = new Thread(new motorThread(this.motor, speed, stepAngle, this.motorStep));
+//        while (this.motor.isBusy()){}
+//        threadingMotor.start();
     }
-
-
+    public boolean isTurnComplete(){
+        return threadingMotor.isAlive();
+    }
     public void raise(double speed) {
 
         this.motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);

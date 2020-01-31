@@ -1,48 +1,75 @@
 package org.firstinspires.ftc.team17156.scotslib.hardware.extension;
 
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
+
+import static com.qualcomm.robotcore.util.Range.clip;
+import static java.lang.Thread.sleep;
 
 public class FoundationHolder extends Extension {
 
     /* Fields */
-    private Servo left_servo, right_servo;
-
-    private final double GRAB = 0; // TODO: Determine servo value;
-    private final double RELEASE = 180; // TODO: Determine servo value;
+    private Servo leftFoundation;
+    private Servo rightFoundation;
+    private double leftFoundationDefault = 0.15;
+    private double rightFoundationDefault = 0.75;
+    private double leftFoundationGrasp = 0.9;
+    private double rightFoundationGrasp = 0.04;
 
 
     /* Methods */
-    public FoundationHolder(HardwareMap hardwareMap, String left_servo, String right_servo) {
 
-        // Get HardwareMap.
+    /**
+     * Constructor for the Intake class.
+     *
+     * @param hardwareMap: The HardwareMap, to get access to the motors.
+     * @param motor_left:  The left motor's name.
+     * @param motor_right: The right motor's name.
+     * @param speed:       The speed at which the intake should work [-1, 1].
+     */
+    public FoundationHolder(HardwareMap hardwareMap, String leftFoundationName, String rightFoundationName) {
+
+        // Get the HardwareMap.
         super(hardwareMap);
 
-        // Get Servos.
-        this.left_servo = super.get(Servo.class, left_servo);
-        this.right_servo = super.get(Servo.class, right_servo);
-
-        // Set servos. Since they are in mirrored positions, invert directions.
-        this.left_servo.setDirection(Servo.Direction.FORWARD);
-        this.left_servo.scaleRange(0, 1);
-        this.left_servo.setDirection(Servo.Direction.REVERSE);
-        this.right_servo.scaleRange(0, 1);
-
-        // Reset Servos to original position.
-        this.release();
-
+        // Set the motors' instances.
+        this.leftFoundation = super.get(Servo.class, leftFoundationName);
+        leftFoundation.scaleRange(0, 1);
+        this.rightFoundation = super.get(Servo.class, rightFoundationName);
+        rightFoundation.scaleRange(0, 1);
+        this.run(State.DEFAULT);
     }
 
 
-    public void grab() {
-
-        this.left_servo.setPosition(this.GRAB);
-        this.right_servo.setPosition(this.GRAB);
+    public enum State {
+        DEFAULT, GRASP
     }
 
-    public void release() {
-
-        this.left_servo.setPosition(this.RELEASE);
-        this.right_servo.setPosition(this.RELEASE);
+    /**
+     * Runs the block intake given a direction, and uses the previously-defined speed to intake it.
+     *
+     * @param d: the direction (IN, OUT, or STOP)
+     */
+    public void run(State d) {
+        switch (d) {
+            case DEFAULT:
+                this.leftFoundation.setPosition(leftFoundationDefault);
+                this.rightFoundation.setPosition(rightFoundationDefault);
+                break;
+            case GRASP:
+                this.leftFoundation.setPosition(leftFoundationGrasp);
+                this.rightFoundation.setPosition(rightFoundationGrasp);
+                break;
+        }
     }
+
+    public Servo getRightFoundation() {
+        return this.rightFoundation;
+    }
+    public Servo getLeftFoundation() {
+        return this.leftFoundation;
+    }
+
 }

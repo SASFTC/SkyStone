@@ -8,12 +8,14 @@ import com.qualcomm.robotcore.hardware.Servo;
 import static com.qualcomm.robotcore.util.Range.clip;
 import static java.lang.Thread.sleep;
 
-public class IntakeServo extends Extension {
+public class sideLifting extends Extension {
 
     /* Fields */
-    private Servo intakeServo;
-    private double retractValue = 0.15;
-    private double pushValue = 0.7;
+    private double groundToFirst = 0.15;
+    private double firstToSecond = 0.7;
+    private int currentFloor = 0;
+    private TurnAngle liftingServo;
+    private double speed;
 
 
     /* Methods */
@@ -26,20 +28,18 @@ public class IntakeServo extends Extension {
      * @param motor_right: The right motor's name.
      * @param speed:       The speed at which the intake should work [-1, 1].
      */
-    public IntakeServo(HardwareMap hardwareMap, String intakeServoName) {
+    public sideLifting(HardwareMap hardwareMap, String liftingServoName, int motorStep, double speed) {
 
         // Get the HardwareMap.
         super(hardwareMap);
-
+        this.speed = speed;
         // Set the motors' instances.
-        intakeServo = super.get(Servo.class, intakeServoName);
-        intakeServo.scaleRange(0, 1);
-        this.run(Direction.RETRACT);
+        liftingServo = new TurnAngle(hardwareMap, liftingServoName, 1.0, 100, motorStep);
     }
 
 
     public enum Direction {
-        RETRACT, PUSH
+        UP, DOWN
     }
 
     /**
@@ -48,30 +48,24 @@ public class IntakeServo extends Extension {
      * @param d: the direction (IN, OUT, or STOP)
      */
     public void run(Direction d) {
+        double liftValue = 0;
         switch (d) {
-            case RETRACT:
-                intakeServo.setPosition(retractValue);
-                break;
-            case PUSH:
-                intakeServo.setPosition(pushValue);
-                break;
-            default:
-                intakeServo.setPosition(retractValue);
-                break;
+            case UP:
+                if (currentFloor == 0)
+                    liftValue = groundToFirst;
+                else if (currentFloor == 1)
+                    liftValue = firstToSecond;
+            case DOWN:
+                if (currentFloor == 1)
+                    liftValue = -groundToFirst;
+                else if (currentFloor == 0)
+                    liftValue = -firstToSecond;
         }
+        liftingServo.turn(speed, liftValue, false);
     }
 
-    public Servo getServo() {
-        return this.intakeServo;
-    }
-
-    public void run() {
-        this.run(Direction.PUSH);
-        try {
-            sleep(200);
-        } catch (InterruptedException e) {
-        }
-        this.run(Direction.RETRACT);
+    public TurnAngle getMotor() {
+        return this.liftingServo;
     }
 
 

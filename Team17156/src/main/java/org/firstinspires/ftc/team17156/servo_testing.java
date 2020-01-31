@@ -21,6 +21,8 @@ public class servo_testing extends OpMode {
     private double testValue = 0.5;
     private boolean isLeftRelease = false;
     private boolean isRightRelease = false;
+    private boolean isaLeftRelease = false;
+    private boolean isaRightRelease = false;
 
 
 
@@ -42,7 +44,7 @@ public class servo_testing extends OpMode {
 //                "wrist_servo", "grabbing_servo", 1, 50);
 
         // Telemetry.
-        this.testingServo = hardwareMap.get(Servo.class, "capstone_servo");
+        this.testingServo = hardwareMap.get(Servo.class, "wrist_servo");
         this.testingServo.scaleRange(0, 1);
 
 
@@ -63,7 +65,7 @@ public class servo_testing extends OpMode {
     public void start() {
 //        this.testingMotor.turn(0.25, 90);
 //        this.testingMotor = new TurnAngle(hardwareMap, "testing_motor", 1.0, 100, 1680);
-//        this.testingMotor.turnTo(1.0, 0);
+//        this.testingMotor.turn(1.0, 0);
     }
 
     /*
@@ -81,6 +83,16 @@ public class servo_testing extends OpMode {
             isRightRelease = false;
             isLeftRelease = false;
         }
+        if (isPressed(gamepad1.left_trigger) && !isPressed(gamepad1.right_trigger) && !isaLeftRelease){
+            isaLeftRelease = true;
+            testValue -= 0.1;
+        } else if (isPressed(gamepad1.right_trigger) && !isPressed(gamepad1.left_trigger) && !isaRightRelease){
+            isaRightRelease = true;
+            testValue += 0.1;
+        } else if (!isPressed(gamepad1.right_trigger) && !isPressed(gamepad1.left_trigger)) {
+            isaRightRelease = false;
+            isaLeftRelease = false;
+        }
         telemetry.addData("value", testValue);
         telemetry.update();
         testingServo.setPosition(testValue);
@@ -97,4 +109,5 @@ public class servo_testing extends OpMode {
     public boolean isPressed(float triggerValue) {
         return triggerValue > 0.2;
     }
+
 }

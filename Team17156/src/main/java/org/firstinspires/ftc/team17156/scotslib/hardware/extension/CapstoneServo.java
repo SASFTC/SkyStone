@@ -10,7 +10,7 @@ public class CapstoneServo extends Extension {
     /* Fields */
     private Servo capstoneServo;
     private double holdValue = 0.15;
-    private double putValue = 0.7;
+    private double putValue = 0.77;
 
 
     /* Methods */
@@ -30,6 +30,7 @@ public class CapstoneServo extends Extension {
 
         // Set the motors' instances.
         capstoneServo = super.get(Servo.class, capstoneServoName);
+        this.run(Direction.HOLD);
         capstoneServo.scaleRange(0, 1);
 //        this.run(Direction.HOLD);
     }
@@ -48,10 +49,13 @@ public class CapstoneServo extends Extension {
         switch (d) {
             case HOLD:
                 capstoneServo.setPosition(holdValue);
+                break;
             case PUT:
                 capstoneServo.setPosition(putValue);
+                break;
             default:
                 capstoneServo.setPosition(holdValue);
+                break;
         }
     }
 
@@ -61,8 +65,9 @@ public class CapstoneServo extends Extension {
 
     public void run() {
         this.run(Direction.PUT);
-        try {sleep(200);} catch (InterruptedException e) {}
-        this.run(Direction.HOLD);
+        try {sleep(500);
+            this.run(Direction.HOLD);
+        } catch (InterruptedException e) {}
     }
 
 

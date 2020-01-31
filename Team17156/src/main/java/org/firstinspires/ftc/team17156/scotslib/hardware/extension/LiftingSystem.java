@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+//import org.firstinspires.ftc.team17156.scotslib.hardware.drivetrain.ReleaseSequence;
 
 import static com.qualcomm.robotcore.util.Range.clip;
 
@@ -28,10 +29,15 @@ public class LiftingSystem extends Extension {
     ;
 
     // TODO: Determine total steps to lift the arm, or use button to limit arm.
-    private final int brickTall = 326;
-    private final int correction = 140;
+    private final int brickTall = 295;
+    private final int correction = 224;
+    private final int avoidStructuralCollision = 555;
+    private double startingHeight = 197;
+    private final int avoidGrabberCollision = 367;
     private double liftingMotorStep;
     private HardwareMap hardwareMap;
+    private double liftedHeight = 0;
+    TurnAngle raisingMotor;
 
 
     /* Methods */
@@ -54,11 +60,14 @@ public class LiftingSystem extends Extension {
 
         this.wristServo.scaleRange(0, 1);
         this.grabbingServo.scaleRange(0, 1);
+        raisingMotor = new TurnAngle(hardwareMap, this.liftingMotor, 1.0, 100, this.liftingMotorStep);
+
 
         // Save metrics.
         this.maxLiftingSpeed = maxLiftingSpeed;
         this.accel = accel;
     }
+
     public LiftingSystem(HardwareMap hardwareMap, String liftingMotor, double maxLiftingSpeed, double accel, double liftingMotorStep) {
 
         // Get hardwareMap to access components.
@@ -80,12 +89,26 @@ public class LiftingSystem extends Extension {
     }
 
     public void goBricks(double speed, double bricks, boolean addCorrection) {
-        TurnAngle raisingMotor = new TurnAngle(hardwareMap, this.liftingMotor, 1.0, 100, this.liftingMotorStep);
-        double newCorrection = (addCorrection) ? correction:0;
-        double finalAngle = (bricks < 0) ? (bricks*brickTall-newCorrection):(bricks*brickTall+newCorrection);
-//        telemetry.addData("correction", finalAngle);
-//        telemetry.update();
-        raisingMotor.turnTo(speed, finalAngle);
+        double finalAngle = bricks * brickTall;
+        liftedHeight += finalAngle;
+        if (addCorrection) {
+            finalAngle += correction;
+        }
+        if (bricks < 2) {
+            raisingMotor.turn(speed, avoidStructuralCollision, true);
+            while (liftingMotor.isBusy()) {}
+            finalAngle -= avoidStructuralCollision;
+        }
+        raisingMotor.turn(speed, finalAngle, true);
+    }
+
+    public void dropBrick() {
+//        Thread release = new Thread(new ReleaseSequence(liftingMotor, correction, avoidGrabberCollision, liftedHeight, this));
+//        release.start();
+    }
+
+    public boolean goBricksIsComplete() {
+        return raisingMotor.isTurnComplete();
     }
 
     public void stop() {
@@ -99,17 +122,18 @@ public class LiftingSystem extends Extension {
 
             case OUT:
                 // Activate servo on the wrist to swing the arm outward.
-                this.wristServo.setPosition(0); // TODO: Determine angle value.
+                this.wristServo.setPosition(0.02); // TODO: Determine angle value.
                 break;
 
             case IN:
                 // Activate servo on the wrist to swing the arm inward.
-                this.wristServo.setPosition(0.32); // TODO: Determine angle value.
+                this.wristServo.setPosition(0.5); // TODO: Determine angle value.
                 break;
 
         }
     }
-    public double getMotorPosition(){
+
+    public double getMotorPosition() {
         return liftingMotor.getCurrentPosition();
     }
 
@@ -119,12 +143,12 @@ public class LiftingSystem extends Extension {
 
             case GRAB:
                 // Activate servo on the wrist to swing the arm outward.
-                this.wristServo.setPosition(0.5); // TODO: Determine angle value.
+                this.grabbingServo.setPosition(0.31); // TODO: Determine angle value.
                 break;
 
             case RELEASE:
                 // Activate servo on the wrist to swing the arm inward.
-                this.wristServo.setPosition(0); // TODO: Determine angle value.
+                this.grabbingServo.setPosition(0.7); // TODO: Determine angle value.
                 break;
 
         }
@@ -158,10 +182,12 @@ public class LiftingSystem extends Extension {
         newSpeed = clip(newSpeed, -this.maxLiftingSpeed, this.maxLiftingSpeed);
         motor.setPower(newSpeed);
     }
-    public Servo getWristServo(){
+
+    public Servo getWristServo() {
         return wristServo;
     }
-    public Servo getGrabbingServo(){
+
+    public Servo getGrabbingServo() {
         return grabbingServo;
     }
 }

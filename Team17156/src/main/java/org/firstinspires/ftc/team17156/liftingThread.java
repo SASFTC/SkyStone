@@ -27,17 +27,22 @@ public class liftingThread implements Runnable {
         try{sleep(200);}
         catch (InterruptedException e){}
         this.liftingSys.goBricks(1.0, bricks, true);
+        while (!this.liftingSys.goBricksIsComplete()){}
         this.liftingSys.getWristServo().setPosition(0.54);
         try{sleep(900);}
         catch (InterruptedException e){}
         this.liftingSys.goBricks(1.0, -0.01, true);
+        while (!this.liftingSys.goBricksIsComplete()){}
         this.liftingSys.getGrabbingServo().setPosition(0.7);
         try{sleep(500);}
         catch (InterruptedException e){}
         this.liftingSys.goBricks(1.0, 0.01, true);
+        while (!this.liftingSys.goBricksIsComplete()){}
         this.liftingSys.getWristServo().setPosition(0.87);
-        this.liftingSys.goBricks(0.6, (int)(bricks/2), true);
-        this.liftingSys.goBricks(0.3, (int)((bricks+1)/2), false);
+        this.liftingSys.goBricks(0.6, (int)(-bricks/2), true);
+        while (!this.liftingSys.goBricksIsComplete()){}
+        this.liftingSys.goBricks(0.3, (int)((-bricks-1)/2), false);
+        while (!this.liftingSys.goBricksIsComplete()){}
 
     }
 }

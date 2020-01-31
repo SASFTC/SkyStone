@@ -24,41 +24,23 @@ public class MecanumDrivetrain extends Drivetrain {
     private double angle = 0;               // -pi <=     angle     <= pi
     private double rotation = 0;            //  -1 <=    rotation   <= 1
     private double wheelDiameter = 10.2;
-    private int motorStepLF = 1680;
-    private int motorStepLB = 1680;
-    private int motorStepRF = 1680;
-    private int motorStepRB = 1680;
+    private double motorStepLF = 537.6;
+    private double motorStepLB = 537.6;
+    private double motorStepRF = 537.6;
+    private double motorStepRB = 537.6;
     private HardwareMap hardwareMap;
+    Thread LFMotor;
+    Thread RFMotor;
+    Thread LBMotor;
+    Thread RBMotor;
 
 
 
     /* Methods */
-    /**
-     * Constructor for the Mecanum Drive class. Given an instance of all four motors,
-     * it handles all the necessary math and logic to drive the mecanum Drivetrain.
-     *
-     * @param hardwareMap: The reference to the HardwareMap in the OpClass.
-     * @param left_front:  The front-left motor.
-     * @param right_front: The front-right motor.
-     * @param left_back:   The back-left motor.
-     * @param right_back:  The back-right motor.
-     * @param accel:       The acceleration limit of the robot.
-     * @param maxSpeed:    The maximum speed of the robot.
-     */
-    public MecanumDrivetrain(HardwareMap hardwareMap, String left_front, String right_front,
-                             String left_back, String right_back, double accel, double maxSpeed,
+    public MecanumDrivetrain(HardwareMap hardwareMap, DcMotor motor_left_front, DcMotor motor_right_front,
+                             DcMotor motor_left_back, DcMotor motor_right_back, double accel, double maxSpeed,
                              boolean invertedDrive) {
         super(hardwareMap);
-        // Get HardwareMap
-        this.hardwareMap = hardwareMap;
-
-        // Set the motors' instances.
-        this.motor_left_front = super.get(DcMotor.class, left_front);
-        this.motor_right_front = super.get(DcMotor.class, right_front);
-        this.motor_left_back = super.get(DcMotor.class, left_back);
-        this.motor_right_back = super.get(DcMotor.class, right_back);
-//        super.get(DcMotor.class, "motor");
-
         // Set the motor orientation.
         if (!invertedDrive) {
             this.motor_left_front.setDirection(DcMotorSimple.Direction.FORWARD);
@@ -91,14 +73,15 @@ public class MecanumDrivetrain extends Drivetrain {
         this.maxSpeed = maxSpeed;
     }
 
-    public MecanumDrivetrain(HardwareMap hardwareMap, String left_front, String right_front, String left_back, String right_back) {
-        this(hardwareMap, left_front, right_front, left_back, right_back, 0.5, 1, false);
-    }
+//    public MecanumDrivetrain(HardwareMap hardwareMap, String left_front, String right_front, String left_back, String right_back) {
+//        this(hardwareMap, left_front, right_front, left_back, right_back, 0.5, 1, false);
+//    }
 
 
     /**
      * The main driving method.
-     * Sets the appropriate motor powers given the speed, angle, and rotation speed.
+     * Sets the appropriate motor powers given the speed, angle.
+     * , and rotation speed.
      *
      * @param speed:    The magnitude of the velocity [-1, 1].
      * @param angle:    The direction of the velocity [-pi, pi]. The angle is zero when going forward,
@@ -125,29 +108,28 @@ public class MecanumDrivetrain extends Drivetrain {
         accelMotor(this.motor_left_back, clip(v3, -1, 1));
         accelMotor(this.motor_right_back, clip(v4, -1, 1));
     }
-    public void drive(double speed, double angle, double rotation, double distance){
-        double angleToRotate = distance/(Math.pow(this.wheelDiameter/2, 2)*Math.PI/360);
+
+    public void driveByDistance(double speed, double angle, double rotation, double distance) {
+        double angleToRotate = (distance / (this.wheelDiameter * Math.PI)) * 360;
         // Constrain speed to max speed.
         TurnAngle angleTurnMotorLF = new TurnAngle(this.hardwareMap, this.motor_left_front, 1.0, 100.0, this.motorStepLF);
-//        angleTurnMotorLF.turnTo();
+        TurnAngle angleTurnMotorRF = new TurnAngle(this.hardwareMap, this.motor_right_front, 1.0, 100.0, this.motorStepRF);
+        TurnAngle angleTurnMotorLB = new TurnAngle(this.hardwareMap, this.motor_left_back, 1.0, 100.0, this.motorStepLB);
+        TurnAngle angleTurnMotorRB = new TurnAngle(this.hardwareMap, this.motor_right_back, 1.0, 100.0, this.motorStepRB);
+
+//        angleTurnMotorLF.turn();
         this.speed = clip(speed, -this.maxSpeed, this.maxSpeed);
         this.angle = angle;
         this.rotation = clip(-rotation, -this.maxSpeed, this.maxSpeed);
-
-        // Calculate each motor's speed.
-        double v1 = this.speed * Math.sin(this.angle + Math.PI / 4) - this.rotation;    // Left front motor.
-        double v2 = this.speed * Math.cos(this.angle + Math.PI / 4) + this.rotation;    // Right front motor.
-        double v3 = this.speed * Math.cos(this.angle + Math.PI / 4) - this.rotation;    // Left back motor.
-        double v4 = this.speed * Math.sin(this.angle + Math.PI / 4) + this.rotation;    // Right back motor.
-
-        // Apply the desired power to each motor.
-        accelMotor(this.motor_left_front, clip(v1, -1, 1));
-        accelMotor(this.motor_right_front, clip(v2, -1, 1));
-        accelMotor(this.motor_left_back, clip(v3, -1, 1));
-        accelMotor(this.motor_right_back, clip(v4, -1, 1));
-
+        angleTurnMotorLF.turn(1.0, angleToRotate, false);
+        angleTurnMotorRB.turn(1.0, angleToRotate, false);
+        angleTurnMotorLF.turn(1.0, angleToRotate, false);
+        angleTurnMotorLF.turn(1.0, angleToRotate, false);
+        LFMotor.start();
+        RFMotor.start();
+        LBMotor.start();
+        RBMotor.start();
         this.drive(0, 0, rotation);
-
     }
 
 
@@ -163,7 +145,7 @@ public class MecanumDrivetrain extends Drivetrain {
     public void driveJoystick(double x, double y, double rotation, double speedFactor, double rotationFactor) {
 
         // Calculate the necessary values.
-        double speed = Math.hypot(x, y)*speedFactor;
+        double speed = Math.hypot(x, y) * speedFactor;
         // NOTE: in our controller, the Y axis is inverted – 1 is back and -1 is forward, so we invert it.
         double angle = Math.atan2(-y, -x) - Math.PI / 2;   // Make angle = 0 when joystick is forward.
         rotation *= rotationFactor;
