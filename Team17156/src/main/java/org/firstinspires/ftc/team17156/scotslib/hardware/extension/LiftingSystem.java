@@ -1,6 +1,6 @@
 package org.firstinspires.ftc.team17156.scotslib.hardware.extension;
 
-import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorImplEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -9,12 +9,13 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 //import org.firstinspires.ftc.team17156.scotslib.hardware.drivetrain.ReleaseSequence;
 
 import static com.qualcomm.robotcore.util.Range.clip;
+import static java.lang.Thread.sleep;
 
 
 public class LiftingSystem extends Extension {
 
     /* Fields */
-    private DcMotor liftingMotor;
+    private DcMotorImplEx liftingMotor;
     private Servo wristServo, grabbingServo;
 
     private double maxLiftingSpeed;
@@ -29,11 +30,18 @@ public class LiftingSystem extends Extension {
     ;
 
     // TODO: Determine total steps to lift the arm, or use button to limit arm.
-    private final int brickTall = 295;
-    private final int correction = 224;
-    private final int avoidStructuralCollision = 555;
-    private double startingHeight = 197;
-    private final int avoidGrabberCollision = 367;
+    private final int brickTall = 170;
+    private final int correction = 120;
+    private final int brick0tall = 269;
+    private final int brick1tall = 567;
+    private final int brick2tall = 893;
+    private final int brick3tall = 1200;
+    private final int brick4tall = 1504;
+    private final int brick5tall = 1790;
+    private final int brick6tall = 2080;
+    private final int avoidStructuralCollision = 650;
+    private double startingHeight = -8;
+    private final int avoidGrabberCollision = 270;
     private double liftingMotorStep;
     private HardwareMap hardwareMap;
     private double liftedHeight = 0;
@@ -49,14 +57,14 @@ public class LiftingSystem extends Extension {
         this.hardwareMap = hardwareMap;
         this.liftingMotorStep = liftingMotorStep;
         // Get motors and servos.
-        this.liftingMotor = super.get(DcMotor.class, liftingMotor);
+        this.liftingMotor = super.get(DcMotorImplEx.class, liftingMotor);
         this.wristServo = super.get(Servo.class, wristServo);
         this.grabbingServo = super.get(Servo.class, grabbingServo);
 
         // Configure motors and servos.
         this.liftingMotor.setDirection(DcMotorSimple.Direction.FORWARD);
-        this.liftingMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        this.liftingMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        this.liftingMotor.setZeroPowerBehavior(DcMotorImplEx.ZeroPowerBehavior.BRAKE);
+        this.liftingMotor.setMode(DcMotorImplEx.RunMode.STOP_AND_RESET_ENCODER);
 
         this.wristServo.scaleRange(0, 1);
         this.grabbingServo.scaleRange(0, 1);
@@ -77,12 +85,12 @@ public class LiftingSystem extends Extension {
         this.hardwareMap = hardwareMap;
         this.liftingMotorStep = liftingMotorStep;
         // Get motors and servos.
-        this.liftingMotor = super.get(DcMotor.class, liftingMotor);
+        this.liftingMotor = super.get(DcMotorImplEx.class, liftingMotor);
 
         // Configure motors and servos.
         this.liftingMotor.setDirection(DcMotorSimple.Direction.FORWARD);
-        this.liftingMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        this.liftingMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        this.liftingMotor.setZeroPowerBehavior(DcMotorImplEx.ZeroPowerBehavior.BRAKE);
+        this.liftingMotor.setMode(DcMotorImplEx.RunMode.STOP_AND_RESET_ENCODER);
 
 
         // Save metrics.
@@ -90,14 +98,46 @@ public class LiftingSystem extends Extension {
         this.accel = accel;
     }
 
-    public void goBricks(double speed, double bricks, int correctionFactor, int avoidGrabberCollisionFactor) {
-        double finalAngle = bricks * brickTall;
-        liftedHeight += finalAngle;
+    public void goBricks(double speed, double bricks, int correctionFactor, int avoidGrabberCollisionFactor, LiftingSystem liftingSys, boolean brickCounts) {
+        double finalAngle = 0;
+        if (brickCounts) {
+            switch (Math.abs((int) bricks)) {
+                case 0:
+                    finalAngle = brick0tall;
+                    break;
+                case 1:
+                    finalAngle = brick1tall;
+                    break;
+                case 2:
+                    finalAngle = brick2tall;
+                    break;
+                case 3:
+                    finalAngle = brick3tall;
+                    break;
+                case 4:
+                    finalAngle = brick4tall;
+                    break;
+                case 5:
+                    finalAngle = brick5tall;
+                    break;
+                case 6:
+                    finalAngle = brick6tall;
+                    break;
+            }
+        }
+        if (bricks < 0) {
+            finalAngle = -finalAngle;
+        }
         finalAngle += correction * correctionFactor;
         finalAngle += avoidGrabberCollision * avoidGrabberCollisionFactor;
-        if (bricks < 2 && bricks > 0) {
+        if (bricks < 2 && bricks >= 0 && brickCounts) {
             raisingMotor.turn(speed, avoidStructuralCollision, true);
             while (liftingMotor.isBusy()) {
+            }
+            liftingSys.swingWrist(Direction.OUT);
+            try {
+                sleep(600);
+            } catch (InterruptedException e) {
             }
             finalAngle -= avoidStructuralCollision;
         }
@@ -160,10 +200,10 @@ public class LiftingSystem extends Extension {
     /**
      * A trapezoidal acceleration control for the motors, to avoid abrupt accelerations/decelerations.
      *
-     * @param motor:    The DcMotor to which the power is applied.
+     * @param motor:    The DcMotorImplEx to which the power is applied.
      * @param setSpeed: The final velocity [-1, 1].
      */
-    private void accelMotor(DcMotor motor, double setSpeed) {
+    private void accelMotor(DcMotorImplEx motor, double setSpeed) {
 
         double newSpeed = 0;
 

@@ -424,7 +424,7 @@ Additional Notes Regarding Version 3.00 (built on 17.04.13)
 In addition to the release changes listed below (see section labeled "Version 3.00 (built on 17.04.013)"), version 3.00 has the following important changes:
 
 1. Version 3.00 software uses a new version of the FTC Robocol (robot protocol).  If you upgrade to v3.0 on the Robot Controller and/or Android Studio side, you must also upgrade the Driver Station software to match the new Robocol.
-2. Version 3.00 software removes the setMaxSpeed and getMaxSpeed methods from the DcMotor class.  If you have an op mode that formerly used these methods, you will need to remove the references/calls to these methods.  Instead, v3.0 provides the max speed information through the use of motor profiles that are selected by the user during robot configuration.
+2. Version 3.00 software removes the setMaxSpeed and getMaxSpeed methods from the DcMotorImplEx class.  If you have an op mode that formerly used these methods, you will need to remove the references/calls to these methods.  Instead, v3.0 provides the max speed information through the use of motor profiles that are selected by the user during robot configuration.
 3. Version 3.00 software currently does not have a mechanism to disable extra i2c sensors.  We hope to re-introduce this function with a release in the near future.
 
 **************************************************************************************
@@ -650,7 +650,7 @@ Version 2.00 (released on 16.08.19)
  * Standardized units in analog input.
  * Cleaned up code for existing analog sensor classes.
  * setChannelMode and getChannelMode were REMOVED from the DcMotorController class.  This is important - we no longer set the motor modes through the motor controller.
- * setMode and getMode were added to the DcMotor class.  
+ * setMode and getMode were added to the DcMotorImplEx class.  
  * ContinuousRotationServo class has been added to the FTC SDK.
  * Range.clip() method has been overloaded so it can support this operation for int, short and byte integers.
  * Some changes have been made (new methods added) on how a user can access items from the hardware map.
@@ -789,7 +789,7 @@ Release 15.11.04.001
   - Example MRGyroTest.java op mode included.
  * Improved error messages
   - More descriptive error messages for exceptions in user code.
- * Updated DcMotor API
+ * Updated DcMotorImplEx API
  * Enable read mode on new address in setI2cAddress
  * Fix so that driver station app resets the gamepads when switching op modes.
  * USB-related code changes to make USB comm more responsive and to display more explicit error messages.
@@ -808,7 +808,7 @@ Release 15.11.04.001
  * Correctly handle I2C Address change in all color sensors
  * Updated/cleaned up op modes.
   - Updated comments in LinearI2cAddressChange.java example op mode.
-  - Replaced the calls to "setChannelMode" with "setMode" (to match the new of the DcMotor  method).
+  - Replaced the calls to "setChannelMode" with "setMode" (to match the new of the DcMotorImplEx  method).
   - Removed K9AutoTime.java op mode.
   - Added MRGyroTest.java op mode (demonstrates how to use MR Gyro Sensor).
   - Added MRRGBExample.java op mode (demonstrates how to use MR Color Sensor).

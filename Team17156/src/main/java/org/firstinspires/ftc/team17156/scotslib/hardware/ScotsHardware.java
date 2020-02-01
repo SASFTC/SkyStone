@@ -29,7 +29,8 @@
 
 package org.firstinspires.ftc.team17156.scotslib.hardware;
 
-import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorImplEx;
+import com.qualcomm.robotcore.hardware.DcMotorImplEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -52,14 +53,14 @@ import com.qualcomm.robotcore.util.ElapsedTime;
  */
 public class ScotsHardware {
     /* Public OpMode members. */
-    public DcMotor leftFrontDrive;
-    public DcMotor rightFrontDrive;
-    public DcMotor rightBackDrive;
-    public DcMotor leftBackDrive;
-    public DcMotor leftIntakeMotor;
-    public DcMotor rightIntakeMotor;
-    public DcMotor liftingMotor;
-    public DcMotor sideLiftingMotor;
+    public DcMotorImplEx leftFrontDrive;
+    public DcMotorImplEx rightFrontDrive;
+    public DcMotorImplEx rightBackDrive;
+    public DcMotorImplEx leftBackDrive;
+    public DcMotorImplEx leftIntakeMotor;
+    public DcMotorImplEx rightIntakeMotor;
+    public DcMotorImplEx liftingMotor;
+    public DcMotorImplEx sideLiftingMotor;
     public Servo wristServo;
     public Servo grabbingServo;
     public Servo sideGrabbingServo;
@@ -88,21 +89,21 @@ public class ScotsHardware {
         this.hardwareMap = hardwareMap;
 
         // Define and Initialize Motors
-        leftFrontDrive = hardwareMap.get(DcMotor.class, "front_left_motor");
-        rightFrontDrive = hardwareMap.get(DcMotor.class, "front_right_motor");
-        rightBackDrive = hardwareMap.get(DcMotor.class, "back_left_motor");
-        leftBackDrive = hardwareMap.get(DcMotor.class, "back_right_motor");
-        leftIntakeMotor = hardwareMap.get(DcMotor.class, "left_intake_motor");
-        rightIntakeMotor = hardwareMap.get(DcMotor.class, "right_intake_motor");
-        liftingMotor = hardwareMap.get(DcMotor.class, "lifting_motor");
-        sideLiftingMotor = hardwareMap.get(DcMotor.class, "side_lifting_motor");
+        leftFrontDrive = hardwareMap.get(DcMotorImplEx.class, "front_left_motor");
+        rightFrontDrive = hardwareMap.get(DcMotorImplEx.class, "front_right_motor");
+        rightBackDrive = hardwareMap.get(DcMotorImplEx.class, "back_right_motor");
+        leftBackDrive = hardwareMap.get(DcMotorImplEx.class, "back_left_motor");
+        leftIntakeMotor = hardwareMap.get(DcMotorImplEx.class, "left_intake_motor");
+        rightIntakeMotor = hardwareMap.get(DcMotorImplEx.class, "right_intake_motor");
+        liftingMotor = hardwareMap.get(DcMotorImplEx.class, "lifting_motor");
+        sideLiftingMotor = hardwareMap.get(DcMotorImplEx.class, "side_lifting_motor");
 
         // Set all motors to run without encoders.
         // May want to use RUN_USING_ENCODERS if encoders are installed.
-        leftFrontDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        rightFrontDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        rightBackDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        leftBackDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        leftFrontDrive.setMode(DcMotorImplEx.RunMode.RUN_USING_ENCODER);
+        rightFrontDrive.setMode(DcMotorImplEx.RunMode.RUN_USING_ENCODER);
+        rightBackDrive.setMode(DcMotorImplEx.RunMode.RUN_USING_ENCODER);
+        leftBackDrive.setMode(DcMotorImplEx.RunMode.RUN_USING_ENCODER);
 
         // Define and initialize ALL installed servos.
         wristServo = hardwareMap.get(Servo.class, "wrist_servo");

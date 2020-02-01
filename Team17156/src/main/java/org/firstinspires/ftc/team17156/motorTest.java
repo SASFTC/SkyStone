@@ -2,7 +2,7 @@ package org.firstinspires.ftc.team17156;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorImplEx;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.team17156.scotslib.hardware.drivetrain.MecanumDrivetrain;
@@ -22,7 +22,7 @@ public class motorTest extends OpMode {
     private MecanumDrivetrain machanumDrive;
     private Intake intake;
     private LiftingSystem liftingSystem;
-    private DcMotor testingMotor;
+    private DcMotorImplEx testingMotor;
     private boolean isRightTriggerReleased = true;
     private boolean isLeftTriggerReleased = true;
     private LiftingSystem liftingSys;
@@ -59,7 +59,7 @@ public class motorTest extends OpMode {
 
         telemetry.addData("Status", "Initialized");
 
-        testingMotor = hardwareMap.get(DcMotor.class, "lifting_motor");
+        testingMotor = hardwareMap.get(DcMotorImplEx.class, "lifting_motor");
         angleMotor = new TurnAngle(hardwareMap, this.testingMotor, 1, 100, 537.6);
 
 
@@ -96,15 +96,14 @@ public class motorTest extends OpMode {
     public void loop() {
         if (isPressed(gamepad1.right_trigger) && !isPressed(gamepad1.left_trigger) && isRightTriggerReleased){
             isRightTriggerReleased = false;
-            angleIncrement += 50;
-            angleMotor.turn(0.4, 50, false);
+            this.testingMotor.setPower(0.4);
         } else if (isPressed(gamepad1.left_trigger) && !isPressed(gamepad1.right_trigger)){
             isLeftTriggerReleased = false;
-            angleIncrement -= 50;
-            angleMotor.turn(0.4, -50, false);
+            this.testingMotor.setPower(-0.4);
         } else if (!isPressed(gamepad1.left_trigger) && !isPressed(gamepad1.right_trigger)){
             isLeftTriggerReleased = true;
             isRightTriggerReleased = true;
+            this.testingMotor.setPower(0);
         }
 
         telemetry.addData("data", angleIncrement);

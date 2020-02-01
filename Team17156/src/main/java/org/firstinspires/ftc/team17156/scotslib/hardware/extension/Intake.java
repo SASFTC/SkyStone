@@ -1,6 +1,6 @@
 package org.firstinspires.ftc.team17156.scotslib.hardware.extension;
 
-import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorImplEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
@@ -9,7 +9,7 @@ import static com.qualcomm.robotcore.util.Range.clip;
 public class Intake extends Extension {
 
     /* Fields */
-    private DcMotor motor_left, motor_right;
+    private DcMotorImplEx motor_left, motor_right;
 
     private double speed;
 
@@ -35,16 +35,16 @@ public class Intake extends Extension {
         super(hardwareMap);
 
         // Set the motors' instances.
-        this.motor_left = super.get(DcMotor.class, motor_left);
-        this.motor_right = super.get(DcMotor.class, motor_right);
+        this.motor_left = super.get(DcMotorImplEx.class, motor_left);
+        this.motor_right = super.get(DcMotorImplEx.class, motor_right);
 
         // Set the motors' direction.
         this.motor_left.setDirection(DcMotorSimple.Direction.REVERSE);
         this.motor_right.setDirection(DcMotorSimple.Direction.FORWARD);
 
         // Set ZeroPowerBehavior to BRAKE, so that any forces acting on the intake will not cause movement.
-        this.motor_left.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        this.motor_right.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        this.motor_left.setZeroPowerBehavior(DcMotorImplEx.ZeroPowerBehavior.BRAKE);
+        this.motor_right.setZeroPowerBehavior(DcMotorImplEx.ZeroPowerBehavior.BRAKE);
 
         // Other.
         this.speed = clip(speed, -1, 1);

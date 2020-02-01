@@ -1,12 +1,13 @@
 package org.firstinspires.ftc.team17156.scotslib.hardware.drivetrain;
 
 
-import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorImplEx;
 import com.qualcomm.robotcore.hardware.DcMotorImplEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.team17156.scotslib.hardware.extension.TurnAngle;
+//import org.firstinspires.ftc.team17156.scotslib.hardware.drivetrain.driveDistanceThread;
 
 import static com.qualcomm.robotcore.util.Range.clip;
 
@@ -14,8 +15,8 @@ import static com.qualcomm.robotcore.util.Range.clip;
 public class MecanumDrivetrain extends Drivetrain {
 
     /* Fields */
-    private DcMotor motor_left_front, motor_right_front;
-    private DcMotor motor_left_back, motor_right_back;
+    public DcMotorImplEx motor_left_front, motor_right_front;
+    public DcMotorImplEx motor_left_back, motor_right_back;
 
     private double accel;
     private double maxSpeed;
@@ -29,6 +30,10 @@ public class MecanumDrivetrain extends Drivetrain {
     private double motorStepLB = 537.6;
     private double motorStepRF = 537.6;
     private double motorStepRB = 537.6;
+//    private driveDistanceThread distanceThreadLF;
+//    private driveDistanceThread distanceThreadRF;
+//    private driveDistanceThread distanceThreadLB;
+//    private driveDistanceThread distanceThreadRB;
     private HardwareMap hardwareMap;
     Thread LFMotor;
     Thread RFMotor;
@@ -36,10 +41,9 @@ public class MecanumDrivetrain extends Drivetrain {
     Thread RBMotor;
 
 
-
     /* Methods */
-    public MecanumDrivetrain(HardwareMap hardwareMap, DcMotor motor_left_front, DcMotor motor_right_front,
-                             DcMotor motor_left_back, DcMotor motor_right_back, double accel, double maxSpeed,
+    public MecanumDrivetrain(HardwareMap hardwareMap, DcMotorImplEx motor_left_front, DcMotorImplEx motor_right_front,
+                             DcMotorImplEx motor_left_back, DcMotorImplEx motor_right_back, double accel, double maxSpeed,
                              boolean invertedDrive) {
         super(hardwareMap);
         // Set the motor orientation.
@@ -47,31 +51,24 @@ public class MecanumDrivetrain extends Drivetrain {
         this.motor_right_front = motor_right_front;
         this.motor_left_back = motor_left_back;
         this.motor_right_back = motor_right_back;
-        if (!invertedDrive) {
-            this.motor_left_front.setDirection(DcMotorSimple.Direction.FORWARD);
-            this.motor_right_front.setDirection(DcMotorSimple.Direction.REVERSE);
-            this.motor_left_back.setDirection(DcMotorSimple.Direction.FORWARD);
-            this.motor_right_back.setDirection(DcMotorSimple.Direction.REVERSE);
-        } else {
-            this.motor_left_front.setDirection(DcMotorSimple.Direction.REVERSE);
-            this.motor_right_front.setDirection(DcMotorSimple.Direction.FORWARD);
-            this.motor_left_back.setDirection(DcMotorSimple.Direction.FORWARD);
-            this.motor_right_back.setDirection(DcMotorSimple.Direction.REVERSE);
-        }
+        this.motor_left_front.setDirection(DcMotorSimple.Direction.FORWARD);
+        this.motor_right_front.setDirection(DcMotorSimple.Direction.FORWARD);
+        this.motor_left_back.setDirection(DcMotorSimple.Direction.REVERSE);
+        this.motor_right_back.setDirection(DcMotorSimple.Direction.FORWARD);
 
 
         // Turn on PID for the motors' velocity control.
-//        this.motor_left_front.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-//        this.motor_right_front.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-//        this.motor_left_back.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-//        this.motor_right_back.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+//        this.motor_left_front.setMode(DcMotorImplEx.RunMode.RUN_USING_ENCODER);
+//        this.motor_right_front.setMode(DcMotorImplEx.RunMode.RUN_USING_ENCODER);
+//        this.motor_left_back.setMode(DcMotorImplEx.RunMode.RUN_USING_ENCODER);
+//        this.motor_right_back.setMode(DcMotorImplEx.RunMode.RUN_USING_ENCODER);
 
 
         // Set ZeroPowerBehavior to BRAKE, so that any forces acting on the robot will not cause movement.
-        this.motor_left_front.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        this.motor_right_front.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        this.motor_left_back.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        this.motor_right_back.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        this.motor_left_front.setZeroPowerBehavior(DcMotorImplEx.ZeroPowerBehavior.BRAKE);
+        this.motor_right_front.setZeroPowerBehavior(DcMotorImplEx.ZeroPowerBehavior.BRAKE);
+        this.motor_left_back.setZeroPowerBehavior(DcMotorImplEx.ZeroPowerBehavior.BRAKE);
+        this.motor_right_back.setZeroPowerBehavior(DcMotorImplEx.ZeroPowerBehavior.BRAKE);
 
         // Set other params.
         this.accel = accel;
@@ -117,23 +114,23 @@ public class MecanumDrivetrain extends Drivetrain {
     public void driveByDistance(double speed, double angle, double rotation, double distance) {
         double angleToRotate = (distance / (this.wheelDiameter * Math.PI)) * 360;
         // Constrain speed to max speed.
-        TurnAngle angleTurnMotorLF = new TurnAngle(this.hardwareMap, this.motor_left_front, 1.0, 100.0, this.motorStepLF);
-        TurnAngle angleTurnMotorRF = new TurnAngle(this.hardwareMap, this.motor_right_front, 1.0, 100.0, this.motorStepRF);
-        TurnAngle angleTurnMotorLB = new TurnAngle(this.hardwareMap, this.motor_left_back, 1.0, 100.0, this.motorStepLB);
-        TurnAngle angleTurnMotorRB = new TurnAngle(this.hardwareMap, this.motor_right_back, 1.0, 100.0, this.motorStepRB);
 
 //        angleTurnMotorLF.turn();
         this.speed = clip(speed, -this.maxSpeed, this.maxSpeed);
         this.angle = angle;
         this.rotation = clip(-rotation, -this.maxSpeed, this.maxSpeed);
-        angleTurnMotorLF.turn(1.0, angleToRotate, false);
-        angleTurnMotorRB.turn(1.0, angleToRotate, false);
-        angleTurnMotorLF.turn(1.0, angleToRotate, false);
-        angleTurnMotorLF.turn(1.0, angleToRotate, false);
-        LFMotor.start();
-        RFMotor.start();
-        LBMotor.start();
-        RBMotor.start();
+
+//        distanceThreadLF = new driveDistanceThread(1.0,   angleToRotate, this.motor_left_front);
+//        distanceThreadRF = new driveDistanceThread(1.0,   angleToRotate, this.motor_right_front);
+//        distanceThreadLB = new driveDistanceThread(1.0,   angleToRotate, this.motor_left_back);
+//        distanceThreadRB = new driveDistanceThread(1.0,   angleToRotate, this.motor_right_back);
+//        distanceThreadLF.start();
+//        distanceThreadRF.start();
+//        distanceThreadLB.start();
+//        distanceThreadRB.start();
+
+
+
         this.drive(0, 0, rotation);
     }
 
@@ -181,10 +178,10 @@ public class MecanumDrivetrain extends Drivetrain {
     /**
      * A trapezoidal acceleration control for the motors, to avoid abrupt accelerations/decelerations.
      *
-     * @param motor:    The DcMotor to which the power is applied.
+     * @param motor:    The DcMotorImplEx to which the power is applied.
      * @param setpoint: The final velocity [-1, 1].
      */
-    private void accelMotor(DcMotor motor, double setpoint) {
+    private void accelMotor(DcMotorImplEx motor, double setpoint) {
 
         // NOTE: getPower() returns the power in the interval [0, 1].
         // Therefore, we should use the abs value of setpoint [-1, 1].

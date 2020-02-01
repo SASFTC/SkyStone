@@ -32,7 +32,7 @@ package org.firstinspires.ftc.robotcontroller.external.samples;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorImplEx;
 
 /**
  * This OpMode ramps a single motor speed up and down repeatedly until Stop is pressed.
@@ -56,7 +56,7 @@ public class ConceptRampMotorSpeed extends LinearOpMode {
     static final double MAX_REV     = -1.0;     // Maximum REV power applied to motor
 
     // Define class members
-    DcMotor motor;
+    DcMotorImplEx motor;
     double  power   = 0;
     boolean rampUp  = true;
 
@@ -66,7 +66,7 @@ public class ConceptRampMotorSpeed extends LinearOpMode {
 
         // Connect to motor (Assume standard left wheel)
         // Change the text in quotes to match any motor name on your robot.
-        motor = hardwareMap.get(DcMotor.class, "left_drive");
+        motor = hardwareMap.get(DcMotorImplEx.class, "left_drive");
 
         // Wait for the start button
         telemetry.addData(">", "Press Start to run Motors." );

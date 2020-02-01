@@ -202,7 +202,7 @@ implements java.lang.Iterable&lt;<a href="../../../../com/qualcomm/robotcore/har
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/qualcomm/robotcore/hardware/HardwareMap.html#crservo">crservo</a></span></code>&nbsp;</td>
 </tr>
 <tr class="altColor">
-<td class="colFirst"><code><a href="../../../../com/qualcomm/robotcore/hardware/HardwareMap.DeviceMapping.html" title="class in com.qualcomm.robotcore.hardware">HardwareMap.DeviceMapping</a>&lt;<a href="../../../../com/qualcomm/robotcore/hardware/DcMotor.html" title="interface in com.qualcomm.robotcore.hardware">DcMotor</a>&gt;</code></td>
+<td class="colFirst"><code><a href="../../../../com/qualcomm/robotcore/hardware/HardwareMap.DeviceMapping.html" title="class in com.qualcomm.robotcore.hardware">HardwareMap.DeviceMapping</a>&lt;<a href="../../../../com/qualcomm/robotcore/hardware/DcMotorImplEx.html" title="interface in com.qualcomm.robotcore.hardware">DcMotorImplEx</a>&gt;</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/qualcomm/robotcore/hardware/HardwareMap.html#dcMotor">dcMotor</a></span></code>&nbsp;</td>
 </tr>
 <tr class="rowColor">
@@ -468,7 +468,7 @@ implements java.lang.Iterable&lt;<a href="../../../../com/qualcomm/robotcore/har
 <ul class="blockList">
 <li class="blockList">
 <h4>dcMotor</h4>
-<pre>public&nbsp;<a href="../../../../com/qualcomm/robotcore/hardware/HardwareMap.DeviceMapping.html" title="class in com.qualcomm.robotcore.hardware">HardwareMap.DeviceMapping</a>&lt;<a href="../../../../com/qualcomm/robotcore/hardware/DcMotor.html" title="interface in com.qualcomm.robotcore.hardware">DcMotor</a>&gt; dcMotor</pre>
+<pre>public&nbsp;<a href="../../../../com/qualcomm/robotcore/hardware/HardwareMap.DeviceMapping.html" title="class in com.qualcomm.robotcore.hardware">HardwareMap.DeviceMapping</a>&lt;<a href="../../../../com/qualcomm/robotcore/hardware/DcMotorImplEx.html" title="interface in com.qualcomm.robotcore.hardware">DcMotorImplEx</a>&gt; dcMotor</pre>
 </li>
 </ul>
 <a name="servoController">
@@ -778,7 +778,7 @@ implements java.lang.Iterable&lt;<a href="../../../../com/qualcomm/robotcore/har
  indicated class or interface. If no such device is found, an exception is thrown. Example:
 
  <pre>
-    DcMotor motorLeft = hardwareMap.get(DcMotor.class, "motorLeft");
+    DcMotorImplEx motorLeft = hardwareMap.get(DcMotorImplEx.class, "motorLeft");
     ColorSensor colorSensor = hardwareMap.get(ColorSensor.class, "myColorSensor");
  </pre></div>
 <dl>
@@ -839,7 +839,7 @@ implements java.lang.Iterable&lt;<a href="../../../../com/qualcomm/robotcore/har
  return type to the target type that the programmer knows the returned value to be:
 
  <pre>
-    DcMotor motorLeft = (DcMotor)hardwareMap.get("motorLeft");
+    DcMotorImplEx motorLeft = (DcMotorImplEx)hardwareMap.get("motorLeft");
     ColorSensor colorSensor = (ColorSensor)hardwareMap.get("myColorSensor");
  </pre></div>
 <dl>

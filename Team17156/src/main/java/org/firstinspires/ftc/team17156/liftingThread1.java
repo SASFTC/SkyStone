@@ -26,7 +26,7 @@ public class liftingThread1 implements Runnable {
     public void run() {
         intakeServo.run();
         this.liftingSys.swingWrist(LiftingSystem.Direction.IN);
-        try{sleep(900);}
+        try{sleep(400);}
         catch (InterruptedException e){}
         this.liftingSys.grabber(LiftingSystem.Grabber.GRAB);
 

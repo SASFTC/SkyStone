@@ -1,6 +1,6 @@
 package org.firstinspires.ftc.team17156.scotslib.hardware.extension;
 
-import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorImplEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -15,7 +15,7 @@ import static java.lang.Thread.sleep;
 public class TurnAngle extends Extension {
 
     /* Fields */
-    private DcMotor motor;
+    private DcMotorImplEx motor;
 
     private double maxSpeed;
     private double accel;
@@ -34,12 +34,12 @@ public class TurnAngle extends Extension {
         super(hardwareMap);
 
         // Get motors and servos.
-        this.motor = super.get(DcMotor.class, motor);
+        this.motor = super.get(DcMotorImplEx.class, motor);
 
         // Configure motors and servos.
 //        this.motor.setDirection(DcMotorSimple.Direction.FORWARD);
-//        this.motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-//        this.motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//        this.motor.setZeroPowerBehavior(DcMotorImplEx.ZeroPowerBehavior.BRAKE);
+//        this.motor.setMode(DcMotorImplEx.RunMode.STOP_AND_RESET_ENCODER);
 
         // Save metrics.
         this.maxSpeed = maxSpeed;
@@ -47,7 +47,7 @@ public class TurnAngle extends Extension {
         this.motorStep = motorStep;
     }
 
-    public TurnAngle(HardwareMap hardwareMap, DcMotor motor, double maxSpeed, double accel, double motorStep) {
+    public TurnAngle(HardwareMap hardwareMap, DcMotorImplEx motor, double maxSpeed, double accel, double motorStep) {
 
         // Get hardwareMap to access components.
         super(hardwareMap);
@@ -57,8 +57,8 @@ public class TurnAngle extends Extension {
 
         // Configure motors and servos.
 //        this.motor.setDirection(DcMotorSimple.Direction.FORWARD);
-//        this.motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-//        this.motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//        this.motor.setZeroPowerBehavior(DcMotorImplEx.ZeroPowerBehavior.BRAKE);
+//        this.motor.setMode(DcMotorImplEx.RunMode.STOP_AND_RESET_ENCODER);
 
         // Save metrics.
         this.maxSpeed = maxSpeed;
@@ -72,9 +72,9 @@ public class TurnAngle extends Extension {
         }
 
 
-        this.motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        this.motor.setMode(DcMotorImplEx.RunMode.STOP_AND_RESET_ENCODER);
         this.motor.setTargetPosition((int)stepAngle);
-        this.motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        this.motor.setMode(DcMotorImplEx.RunMode.RUN_TO_POSITION);
         this.motor.setPower(speed);
         while (this.motor.isBusy()) {}
         this.motor.setPower(0);
@@ -88,7 +88,7 @@ public class TurnAngle extends Extension {
     }
     public void raise(double speed) {
 
-        this.motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        this.motor.setMode(DcMotorImplEx.RunMode.RUN_WITHOUT_ENCODER);
 
         if (this.motor.getCurrentPosition() <= LIFT_STEPS &&
                 this.motor.getCurrentPosition() >= 0) {
@@ -133,10 +133,10 @@ public class TurnAngle extends Extension {
     /**
      * A trapezoidal acceleration control for the motors, to avoid abrupt accelerations/decelerations.
      *
-     * @param motor:    The DcMotor to which the power is applied.
+     * @param motor:    The DcMotorImplEx to which the power is applied.
      * @param setSpeed: The final velocity [-1, 1].
      */
-    private void accelMotor(DcMotor motor, double setSpeed) {
+    private void accelMotor(DcMotorImplEx motor, double setSpeed) {
 
         double newSpeed = 0;
 

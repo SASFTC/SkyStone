@@ -1,11 +1,11 @@
 package org.firstinspires.ftc.team17156.scotslib.hardware.component.motor;
 
-import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorImplEx;
 
 public class DcMotorCustom {
 
     /* Fields */
-    private DcMotor motor;
+    private DcMotorImplEx motor;
 
     private long homePosition;
     private DcMotorCustomMode mode;
@@ -19,7 +19,7 @@ public class DcMotorCustom {
 
 
     /* Methods */
-    public DcMotorCustom(DcMotor motor, DcMotorCustomMode mode, DcMotor.Direction direction, DcMotor.ZeroPowerBehavior brake) {
+    public DcMotorCustom(DcMotorImplEx motor, DcMotorCustomMode mode, DcMotorImplEx.Direction direction, DcMotorImplEx.ZeroPowerBehavior brake) {
 
         // Get motor.
         this.motor = motor;
@@ -30,7 +30,7 @@ public class DcMotorCustom {
     }
 
 
-    private void configureMotor(DcMotorCustomMode mode, DcMotor.Direction direction, DcMotor.ZeroPowerBehavior brake) {
+    private void configureMotor(DcMotorCustomMode mode, DcMotorImplEx.Direction direction, DcMotorImplEx.ZeroPowerBehavior brake) {
 
         if (this.notLocked()) {
             // Set motor direction.
@@ -48,21 +48,21 @@ public class DcMotorCustom {
                 case BY_UNREGULATED_POWER:
 
                     // Set mode.
-                    this.motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                    this.motor.setMode(DcMotorImplEx.RunMode.RUN_WITHOUT_ENCODER);
                     break;
 
                 case BY_ANGLE:
 
                     // Set mode.
                     this.homePosition += this.motor.getCurrentPosition(); // Always add position to home before resetting the encoder.
-                    this.motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                    this.motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                    this.motor.setMode(DcMotorImplEx.RunMode.STOP_AND_RESET_ENCODER);
+                    this.motor.setMode(DcMotorImplEx.RunMode.RUN_USING_ENCODER);
                     break;
 
                 case BY_REGULATED_POWER:
 
                     // Set mode.
-                    this.motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                    this.motor.setMode(DcMotorImplEx.RunMode.RUN_USING_ENCODER);
                     break;
             }
         }
@@ -101,7 +101,7 @@ public class DcMotorCustom {
             this.motor.setTargetPosition(position);
 
             // Set mode to run to position.
-            this.motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            this.motor.setMode(DcMotorImplEx.RunMode.RUN_TO_POSITION);
 
             // Apply power.
             this.motor.setPower(Math.abs(power));

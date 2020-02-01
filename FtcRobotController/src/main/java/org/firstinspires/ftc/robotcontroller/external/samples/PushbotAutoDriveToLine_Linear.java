@@ -75,8 +75,8 @@ public class PushbotAutoDriveToLine_Linear extends LinearOpMode {
         robot.init(hardwareMap);
 
         // If there are encoders connected, switch to RUN_USING_ENCODER mode for greater accuracy
-        // robot.leftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        // robot.rightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        // robot.leftDrive.setMode(DcMotorImplEx.RunMode.RUN_USING_ENCODER);
+        // robot.rightDrive.setMode(DcMotorImplEx.RunMode.RUN_USING_ENCODER);
 
         // get a reference to our Light Sensor object.
         lightSensor = hardwareMap.lightSensor.get("sensor_light");                // Primary LEGO Light Sensor

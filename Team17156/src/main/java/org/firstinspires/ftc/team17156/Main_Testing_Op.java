@@ -2,7 +2,7 @@ package org.firstinspires.ftc.team17156;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorImplEx;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.team17156.scotslib.hardware.drivetrain.MecanumDrivetrain;
@@ -51,7 +51,7 @@ public class Main_Testing_Op extends OpMode {
     private boolean isStickReleased = true;
     private ScotsHardware robot;
     private boolean firstTimeToRun = true;
-    private DcMotor sideLifting;
+    private DcMotorImplEx sideLifting;
     private int intakeDirection = 0;
     private boolean isStickClickReleased = true;
     private int phase = 0;
@@ -61,7 +61,7 @@ public class Main_Testing_Op extends OpMode {
      */
     @Override
     public void init() {
-        sideLifting = hardwareMap.get(DcMotor.class, "side_lifting_motor");
+        sideLifting = hardwareMap.get(DcMotorImplEx.class, "side_lifting_motor");
         // Initialize all components.
 //        this.dTrain = new MecanumDrivetrain(hardwareMap, "front_left_motor",
 //                "front_right_motor", "back_left_motor",
@@ -88,6 +88,9 @@ public class Main_Testing_Op extends OpMode {
         this.capstoneServo = new CapstoneServo(hardwareMap, "capstone_servo");
         this.sideGrabberObject = new sideGrabber(hardwareMap, "side_wrist_servo", "side_grabbing_servo");
         this.foundationHolder = new FoundationHolder(hardwareMap, "left_foundation_servo", "right_foundation_servo");
+        liftingThread1Object = new Thread(new liftingThread1(liftingSys, intakeServo));
+        liftingThread2Object = new Thread(new liftingThread2(liftingSys, intakeServo, 2));
+        liftingThread3Object = new Thread(new liftingThread3(liftingSys, intakeServo, 2));
 //        this.intakeServo.getServo().setPosition(this.intakeServoIn);
 //        liftingThreadObject = new Thread(new liftingThread(liftingSys, intakeServo, 0));
     }
@@ -105,7 +108,6 @@ public class Main_Testing_Op extends OpMode {
      */
     @Override
     public void start() {
-
 //        this.testingMotor.turn(0.25, 90);
 //        this.testingMotor = new TurnAngle(hardwareMap, "testing_motor", 1.0, 100, 1680);
         runtime.reset();
@@ -125,9 +127,7 @@ public class Main_Testing_Op extends OpMode {
 //        this.capstoneServo.run();
 //        liftingSys.grabber(LiftingSystem.Grabber.GRAB);
 //        liftingSys.goBricks(1.0, 3, true);
-        liftingThread1Object = new Thread(new liftingThread1(liftingSys, intakeServo));
-        liftingThread2Object = new Thread(new liftingThread2(liftingSys, intakeServo, 2));
-        liftingThread3Object = new Thread(new liftingThread3(liftingSys, intakeServo, 2));
+//        machanumDrive.driveByDistance(1.0, 0, 0, 100);
 //        liftingThreadObject.start();
     }
 
@@ -137,6 +137,9 @@ public class Main_Testing_Op extends OpMode {
      */
     @Override
     public void loop() {
+//        if (isPressed(gamepad1.dpad_up) && ){
+//
+//        }
         if (isPressed(gamepad1.right_trigger) && !isPressed(gamepad1.left_trigger) && isRightTriggerReleased) {
             isRightTriggerReleased = false;
             if (intakeDirection != 1)
@@ -156,9 +159,9 @@ public class Main_Testing_Op extends OpMode {
         if (intakeDirection == 0)
             intake.run(Intake.Direction.STOP);
         else if (intakeDirection == 1)
-            intake.run(Intake.Direction.IN);
-        else if (intakeDirection == -1)
             intake.run(Intake.Direction.OUT);
+        else if (intakeDirection == -1)
+            intake.run(Intake.Direction.IN);
         if (isPressed(gamepad2.right_trigger)){
             sideLifting.setPower(1);
         } else if (isPressed(gamepad2.left_trigger)){
@@ -200,25 +203,28 @@ public class Main_Testing_Op extends OpMode {
 ////            intakeServo.getServo().setPosition(intakeServoIn);
 ////        }
 ////        if (gamepad1.left_stick_button && !isStickPressed){
-//        if (gamepad1.left_stick_button) {
-//            speedFactor = 1.0;
-////            isStickPressed = false;
-////            if (speedFactor == 1.0){
-////                speedFactor = 0.6;
-////            } else {
-////                speedFactor = 1.0;
-////            }
-//        } else {
-//            speedFactor = 0.6;
-////            isStickPressed = true;
-//        }
+        if (gamepad1.left_stick_button) {
+            speedFactor = 1.0;
+//            isStickPressed = false;
+//            if (speedFactor == 1.0){
+//                speedFactor = 0.6;
+//            } else {
+//                speedFactor = 1.0;
+//            }
+        } else {
+            speedFactor = 0.6;
+//            isStickPressed = true;
+        }
 //
-//        if (gamepad1.right_stick_button) {
-//            rotationFactor = 0.45;
-//        } else {
-//            rotationFactor = 0.6;
-//        }
+        if (gamepad1.right_stick_button) {
+            rotationFactor = 0.45;
+        } else {
+            rotationFactor = 0.6;
+        }
         if (gamepad2.right_stick_button && isStickClickReleased) {
+            liftingThread1Object = new Thread(new liftingThread1(liftingSys, intakeServo));
+            liftingThread2Object = new Thread(new liftingThread2(liftingSys, intakeServo, assignedBricks));
+            liftingThread3Object = new Thread(new liftingThread3(liftingSys, intakeServo, assignedBricks));
             isStickClickReleased = false;
             if (phase == 0) {
                 liftingThread1Object.start();
@@ -227,7 +233,7 @@ public class Main_Testing_Op extends OpMode {
                 liftingThread2Object.start();
                 phase++;
             } else if (phase == 2) {
-                liftingThread2Object.start();
+                liftingThread3Object.start();
                 phase = 0;
             }
         } else if (!gamepad2.right_stick_button){
@@ -243,6 +249,12 @@ public class Main_Testing_Op extends OpMode {
         } else {
             machanumDrive.driveJoystick(gamepad1.left_stick_x, gamepad1.left_stick_y, gamepad1.right_stick_x, speedFactor, rotationFactor);
         }
+        if (gamepad2.y){
+            foundationHolder.run(FoundationHolder.State.GRASP);
+        } else if (gamepad2.a){
+            foundationHolder.run(FoundationHolder.State.DEFAULT);
+        }
+
         addedValue = 0;
         if (isSwang(gamepad2.right_stick_y) == 1 && assignedBricks < maxBricks && isStickReleased) {
             isStickReleased = false;

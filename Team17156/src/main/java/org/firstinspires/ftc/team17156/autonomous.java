@@ -32,12 +32,14 @@ package org.firstinspires.ftc.team17156;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorImplEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcontroller.external.samples.HardwarePushbot;
 import org.firstinspires.ftc.team17156.scotslib.hardware.ScotsHardware;
 import org.firstinspires.ftc.team17156.scotslib.hardware.drivetrain.MecanumDrivetrain;
+import org.firstinspires.ftc.team17156.scotslib.hardware.extension.autonomousThread;
 
 /**
  * This file illustrates the concept of driving a path based on encoder counts.
@@ -70,9 +72,17 @@ import org.firstinspires.ftc.team17156.scotslib.hardware.drivetrain.MecanumDrive
 //@Disabled
 public class autonomous extends LinearOpMode {
 
+
     /* Declare OpMode members. */
     ScotsHardware robot = new ScotsHardware();
+
+    private DcMotorImplEx leftFrontDrive;
+    private DcMotorImplEx rightFrontDrive;
+    private DcMotorImplEx leftBackDrive;
+    private DcMotorImplEx rightBackDrive;
     private ElapsedTime runtime = new ElapsedTime();
+    private final double motorStep = 537.6;
+    private final double speed = 0.4;
     private MecanumDrivetrain mecanumDrivetrain;
 
     static final double COUNTS_PER_MOTOR_REV = 1440;    // eg: TETRIX Motor Encoder
@@ -82,6 +92,7 @@ public class autonomous extends LinearOpMode {
             (WHEEL_DIAMETER_INCHES * 3.1415);
     static final double DRIVE_SPEED = 0.6;
     static final double TURN_SPEED = 0.5;
+    private Thread autonomousThreadObject;
 
     @Override
     public void runOpMode() {
@@ -91,9 +102,37 @@ public class autonomous extends LinearOpMode {
          * The init() method of the hardware class does all the work here
          */
         robot.init(hardwareMap);
+        robot.leftBackDrive.setDirection(DcMotorSimple.Direction.REVERSE);
+//        robot.rightFrontDrive.setDirection(DcMotorSimple.Direction.REVERSE);
+        waitForStart();
+//        autonomousThreadObject = new Thread(new autonomousThread(robot.leftFrontDrive, robot.rightFrontDrive, robot.leftBackDrive, robot.rightBackDrive));
+//        autonomousThreadObject.start();
+        double angleToTurn = 720;
+        double finalSteps = angleToTurn * motorStep / 360;
+        robot.leftFrontDrive.setMode(DcMotorImplEx.RunMode.STOP_AND_RESET_ENCODER);
+        robot.leftFrontDrive.setTargetPosition((int) finalSteps);
+        robot.leftFrontDrive.setMode(DcMotorImplEx.RunMode.RUN_TO_POSITION);
+        robot.leftFrontDrive.setPower(speed);
+        robot.rightFrontDrive.setMode(DcMotorImplEx.RunMode.STOP_AND_RESET_ENCODER);
+        robot.rightFrontDrive.setTargetPosition((int) finalSteps);
+        robot.rightFrontDrive.setMode(DcMotorImplEx.RunMode.RUN_TO_POSITION);
+        robot.rightFrontDrive.setPower(speed);
+        robot.leftBackDrive.setMode(DcMotorImplEx.RunMode.STOP_AND_RESET_ENCODER);
+        robot.leftBackDrive.setTargetPosition((int) finalSteps);
+        robot.leftBackDrive.setMode(DcMotorImplEx.RunMode.RUN_TO_POSITION);
+        robot.leftBackDrive.setPower(speed);
+        robot.rightBackDrive.setMode(DcMotorImplEx.RunMode.STOP_AND_RESET_ENCODER);
+        robot.rightBackDrive.setTargetPosition((int) finalSteps);
+        robot.rightBackDrive.setMode(DcMotorImplEx.RunMode.RUN_TO_POSITION);
+        robot.rightBackDrive.setPower(speed);
 
-        mecanumDrivetrain = new MecanumDrivetrain(hardwareMap, robot.leftFrontDrive, robot.rightFrontDrive, robot.leftBackDrive, robot.rightBackDrive, 100, 1, true);
-        mecanumDrivetrain.driveByDistance(1.0, 0, 0, 1000);
+        while (opModeIsActive() && (robot.leftFrontDrive.isBusy() && robot.rightFrontDrive.isBusy() && robot.leftBackDrive.isBusy() && robot.rightBackDrive.isBusy())) {
+        }
+
+        robot.leftBackDrive.setPower(0);
+        this.robot.rightFrontDrive.setPower(0);
+        robot.leftFrontDrive.setPower(0);
+        robot.rightBackDrive.setPower(0);
     }
 
     /*
