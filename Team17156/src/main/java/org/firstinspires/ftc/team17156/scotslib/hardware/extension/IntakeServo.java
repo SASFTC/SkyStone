@@ -55,9 +55,6 @@ public class IntakeServo extends Extension {
             case PUSH:
                 intakeServo.setPosition(pushValue);
                 break;
-            default:
-                intakeServo.setPosition(retractValue);
-                break;
         }
     }
 
@@ -68,7 +65,7 @@ public class IntakeServo extends Extension {
     public void run() {
         this.run(Direction.PUSH);
         try {
-            sleep(200);
+            sleep(500);
         } catch (InterruptedException e) {
         }
         this.run(Direction.RETRACT);

@@ -66,6 +66,8 @@ public class LiftingSystem extends Extension {
         // Save metrics.
         this.maxLiftingSpeed = maxLiftingSpeed;
         this.accel = accel;
+        this.swingWrist(Direction.IN);
+        this.grabber(Grabber.RELEASE);
     }
 
     public LiftingSystem(HardwareMap hardwareMap, String liftingMotor, double maxLiftingSpeed, double accel, double liftingMotorStep) {
@@ -88,15 +90,15 @@ public class LiftingSystem extends Extension {
         this.accel = accel;
     }
 
-    public void goBricks(double speed, double bricks, boolean addCorrection) {
+    public void goBricks(double speed, double bricks, int correctionFactor, int avoidGrabberCollisionFactor) {
         double finalAngle = bricks * brickTall;
         liftedHeight += finalAngle;
-        if (addCorrection) {
-            finalAngle += correction;
-        }
-        if (bricks < 2) {
+        finalAngle += correction * correctionFactor;
+        finalAngle += avoidGrabberCollision * avoidGrabberCollisionFactor;
+        if (bricks < 2 && bricks > 0) {
             raisingMotor.turn(speed, avoidStructuralCollision, true);
-            while (liftingMotor.isBusy()) {}
+            while (liftingMotor.isBusy()) {
+            }
             finalAngle -= avoidStructuralCollision;
         }
         raisingMotor.turn(speed, finalAngle, true);

@@ -42,7 +42,7 @@ public class sideGrabber extends Extension {
         wristServo.scaleRange(0, 1);
         this.grabbingServo = super.get(Servo.class, grabbingServoName);
         grabbingServo.scaleRange(0, 1);
-        this.run(State.APPROACH);
+        this.run(State.DEFAULT);
     }
 
 

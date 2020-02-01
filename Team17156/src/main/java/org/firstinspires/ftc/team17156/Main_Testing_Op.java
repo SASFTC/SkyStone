@@ -42,20 +42,26 @@ public class Main_Testing_Op extends OpMode {
     private int assignedBricks = 0;
     private Intake.Direction rotationDirection = Intake.Direction.STOP;
     private boolean firstTimeLoop = true;
-    private Thread liftingThreadObject;
+    private Thread liftingThread1Object;
+    private Thread liftingThread2Object;
+    private Thread liftingThread3Object;
     private int addedValue = 0;
     private int maxBricks = 6;
     private TurnAngle angleMotor;
     private boolean isStickReleased = true;
     private ScotsHardware robot;
     private boolean firstTimeToRun = true;
+    private DcMotor sideLifting;
+    private int intakeDirection = 0;
+    private boolean isStickClickReleased = true;
+    private int phase = 0;
 
     /*
      * Code to run ONCE when the driver hits INIT
      */
     @Override
     public void init() {
-
+        sideLifting = hardwareMap.get(DcMotor.class, "side_lifting_motor");
         // Initialize all components.
 //        this.dTrain = new MecanumDrivetrain(hardwareMap, "front_left_motor",
 //                "front_right_motor", "back_left_motor",
@@ -73,9 +79,9 @@ public class Main_Testing_Op extends OpMode {
         telemetry.addData("Status", "Initialized");
 
         liftingSys = new LiftingSystem(hardwareMap, "lifting_motor", "wrist_servo", "grabbing_servo", 1.0, 100, 537.6);
-//        machanumDrive = new MecanumDrivetrain(hardwareMap, robot.leftFrontDrive,
-//                robot.rightFrontDrive, robot.leftBackDrive,
-//                robot.rightBackDrive, 100, 1, true);
+        machanumDrive = new MecanumDrivetrain(hardwareMap, robot.leftFrontDrive,
+                robot.rightFrontDrive, robot.leftBackDrive,
+                robot.rightBackDrive, 100, 1, true);
         this.intake = new Intake(hardwareMap, "left_intake_motor",
                 "right_intake_motor", 1);
         this.intakeServo = new IntakeServo(hardwareMap, "intake_servo");
@@ -119,6 +125,10 @@ public class Main_Testing_Op extends OpMode {
 //        this.capstoneServo.run();
 //        liftingSys.grabber(LiftingSystem.Grabber.GRAB);
 //        liftingSys.goBricks(1.0, 3, true);
+        liftingThread1Object = new Thread(new liftingThread1(liftingSys, intakeServo));
+        liftingThread2Object = new Thread(new liftingThread2(liftingSys, intakeServo, 2));
+        liftingThread3Object = new Thread(new liftingThread3(liftingSys, intakeServo, 2));
+//        liftingThreadObject.start();
     }
 
 
@@ -127,14 +137,34 @@ public class Main_Testing_Op extends OpMode {
      */
     @Override
     public void loop() {
-        if (isPressed(gamepad1.right_trigger) && firstTimeToRun) {
-            firstTimeToRun = false;
-            capstoneServo.run();
-//            foundationHolder.run(FoundationHolder.State.GRASP);
-//            liftingSys.goBricks(1.0, -3, true);
-//            liftingSys.dropBrick();
-        } else if (!isPressed(gamepad1.right_trigger)){
-            firstTimeToRun = true;
+        if (isPressed(gamepad1.right_trigger) && !isPressed(gamepad1.left_trigger) && isRightTriggerReleased) {
+            isRightTriggerReleased = false;
+            if (intakeDirection != 1)
+                intakeDirection = 1;
+            else
+                intakeDirection = 0;
+        } else if (isPressed(gamepad1.left_trigger) && !isPressed(gamepad1.right_trigger) && isLeftTriggerReleased){
+            isLeftTriggerReleased = false;
+            if (intakeDirection != -1)
+                intakeDirection = -1;
+            else
+                intakeDirection = 0;
+        } else if (!isPressed(gamepad1.right_trigger) && !isPressed(gamepad1.left_trigger)){
+            isLeftTriggerReleased = true;
+            isRightTriggerReleased = true;
+        }
+        if (intakeDirection == 0)
+            intake.run(Intake.Direction.STOP);
+        else if (intakeDirection == 1)
+            intake.run(Intake.Direction.IN);
+        else if (intakeDirection == -1)
+            intake.run(Intake.Direction.OUT);
+        if (isPressed(gamepad2.right_trigger)){
+            sideLifting.setPower(1);
+        } else if (isPressed(gamepad2.left_trigger)){
+            sideLifting.setPower(-1);
+        } else {
+            sideLifting.setPower(0);
         }
 ////        telemetry.addData("pos", angleMotor.getMotorPosition());
 ////        telemetry.addData("position", Double.toString(liftingSys.getMotorPosition()));
@@ -188,35 +218,48 @@ public class Main_Testing_Op extends OpMode {
 //        } else {
 //            rotationFactor = 0.6;
 //        }
-//        if (gamepad2.right_stick_button) {
-//            liftingThreadObject = new Thread(new liftingThread(liftingSys, intakeServo, assignedBricks));
-//            liftingThreadObject.start();
-//        }
+        if (gamepad2.right_stick_button && isStickClickReleased) {
+            isStickClickReleased = false;
+            if (phase == 0) {
+                liftingThread1Object.start();
+                phase++;
+            } else if (phase == 1) {
+                liftingThread2Object.start();
+                phase++;
+            } else if (phase == 2) {
+                liftingThread2Object.start();
+                phase = 0;
+            }
+        } else if (!gamepad2.right_stick_button){
+            isStickClickReleased = true;
+        }
 //        if (gamepad2.y) {
 //            intakeServo.run();
 //        }
-//        if (gamepad1.left_bumper && !gamepad1.right_bumper) {
-//            machanumDrive.driveJoystick(gamepad1.left_stick_x, gamepad1.left_stick_y, 0.2, speedFactor, rotationFactor);
-//        } else if (gamepad1.right_bumper && !gamepad1.left_bumper) {
-//            machanumDrive.driveJoystick(gamepad1.left_stick_x, gamepad1.left_stick_y, -0.2, speedFactor, rotationFactor);
-//        } else {
-//            machanumDrive.driveJoystick(gamepad1.left_stick_x, gamepad1.left_stick_y, gamepad1.right_stick_x, speedFactor, rotationFactor);
-//        }
-//        if (isSwang(gamepad2.right_stick_y) == 1 && assignedBricks < maxBricks && isStickReleased) {
-//            isStickReleased = false;
-//            addedValue = 1;
-//        } else if (isSwang(gamepad2.right_stick_y) == -1 && assignedBricks > 0 && isStickReleased) {
-//            isStickReleased = false;
-//            addedValue = -1;
-//        } else if (isSwang(gamepad2.right_stick_y) == 0) {
-//            addedValue = 0;
-//            isStickReleased = true;
-//        }
+        if (gamepad1.left_bumper && !gamepad1.right_bumper) {
+            machanumDrive.driveJoystick(gamepad1.left_stick_x, gamepad1.left_stick_y, 0.2, speedFactor, rotationFactor);
+        } else if (gamepad1.right_bumper && !gamepad1.left_bumper) {
+            machanumDrive.driveJoystick(gamepad1.left_stick_x, gamepad1.left_stick_y, -0.2, speedFactor, rotationFactor);
+        } else {
+            machanumDrive.driveJoystick(gamepad1.left_stick_x, gamepad1.left_stick_y, gamepad1.right_stick_x, speedFactor, rotationFactor);
+        }
+        addedValue = 0;
+        if (isSwang(gamepad2.right_stick_y) == 1 && assignedBricks < maxBricks && isStickReleased) {
+            isStickReleased = false;
+            addedValue = 1;
+        } else if (isSwang(gamepad2.right_stick_y) == -1 && assignedBricks > 0 && isStickReleased) {
+            isStickReleased = false;
+            addedValue = -1;
+        } else if (isSwang(gamepad2.right_stick_y) == 0) {
+            addedValue = 0;
+            isStickReleased = true;
+        }
+        telemetry.addData("pad2", isSwang(gamepad2.right_stick_y));
 //
-//        assignedBricks += addedValue;
-//        telemetry.addData("assigned bricks", assignedBricks);
-//        telemetry.addData("Status", "Run Time: " + runtime.toString());
-//        telemetry.update();
+        assignedBricks += addedValue;
+        telemetry.addData("assigned bricks", assignedBricks);
+        telemetry.addData("Status", "Run Time: " + runtime.toString());
+        telemetry.update();
 //
 //
 //        if (gamepad2.b) {
@@ -244,9 +287,9 @@ public class Main_Testing_Op extends OpMode {
 
 
     public int isSwang(float stickValue) {
-        if (stickValue < -0.2) {
+        if (stickValue < -0.7) {
             return 1;
-        } else if (stickValue > 0.2) {
+        } else if (stickValue > 0.7) {
             return -1;
         } else {
             return 0;

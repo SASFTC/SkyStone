@@ -2,6 +2,7 @@ package org.firstinspires.ftc.team17156.scotslib.hardware.drivetrain;
 
 
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorImplEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
@@ -42,6 +43,10 @@ public class MecanumDrivetrain extends Drivetrain {
                              boolean invertedDrive) {
         super(hardwareMap);
         // Set the motor orientation.
+        this.motor_left_front = motor_left_front;
+        this.motor_right_front = motor_right_front;
+        this.motor_left_back = motor_left_back;
+        this.motor_right_back = motor_right_back;
         if (!invertedDrive) {
             this.motor_left_front.setDirection(DcMotorSimple.Direction.FORWARD);
             this.motor_right_front.setDirection(DcMotorSimple.Direction.REVERSE);
