@@ -30,8 +30,8 @@ public class LiftingSystem extends Extension {
     ;
 
     // TODO: Determine total steps to lift the arm, or use button to limit arm.
-    private final int brickTall = 170;
-    private final int correction = 120;
+//    private final int brickTall = 170;
+    private final int correction = 170;
     private final int brick0tall = 269;
     private final int brick1tall = 567;
     private final int brick2tall = 893;
@@ -98,10 +98,10 @@ public class LiftingSystem extends Extension {
         this.accel = accel;
     }
 
-    public void goBricks(double speed, double bricks, int correctionFactor, int avoidGrabberCollisionFactor, LiftingSystem liftingSys, boolean brickCounts) {
+    public void goBricks(double speed, double bricks, int correctionFactor, int avoidGrabberCollisionFactor, LiftingSystem liftingSys, boolean brickCounts, boolean crossBarrier, boolean reverseDirection) {
         double finalAngle = 0;
         if (brickCounts) {
-            switch (Math.abs((int) bricks)) {
+            switch (Math.abs((int)bricks)) {
                 case 0:
                     finalAngle = brick0tall;
                     break;
@@ -125,15 +125,14 @@ public class LiftingSystem extends Extension {
                     break;
             }
         }
-        if (bricks < 0) {
+        if (reverseDirection) {
             finalAngle = -finalAngle;
         }
         finalAngle += correction * correctionFactor;
         finalAngle += avoidGrabberCollision * avoidGrabberCollisionFactor;
-        if (bricks < 2 && bricks >= 0 && brickCounts) {
+        if (bricks < 2 && bricks >= 0 && crossBarrier) {
             raisingMotor.turn(speed, avoidStructuralCollision, true);
-            while (liftingMotor.isBusy()) {
-            }
+            while (liftingMotor.isBusy()) {}
             liftingSys.swingWrist(Direction.OUT);
             try {
                 sleep(600);

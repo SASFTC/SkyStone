@@ -24,7 +24,7 @@ public class liftingThread2 implements Runnable {
 
     @Override
     public void run() {
-        this.liftingSys.goBricks(1.0, bricks, 1, 0, liftingSys, true);
+        this.liftingSys.goBricks(1.0, bricks, 1, 0, liftingSys, true, true, false);
         if (bricks > 2 || bricks < 0)
             this.liftingSys.swingWrist(LiftingSystem.Direction.OUT);
     }
