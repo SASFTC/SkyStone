@@ -24,11 +24,12 @@ public class liftingThread1 implements Runnable {
 
     @Override
     public void run() {
-        intakeServo.run();
+        intakeServo.run(IntakeServo.Direction.PUSH);
         this.liftingSys.swingWrist(LiftingSystem.Direction.IN);
         try{sleep(400);}
         catch (InterruptedException e){}
         this.liftingSys.grabber(LiftingSystem.Grabber.GRAB);
+        intakeServo.run(IntakeServo.Direction.RETRACT);
 
     }
 }

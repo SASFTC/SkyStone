@@ -103,11 +103,13 @@ public class autonomous extends LinearOpMode {
          */
         robot.init(hardwareMap);
         robot.leftBackDrive.setDirection(DcMotorSimple.Direction.REVERSE);
+//        robot.leftFrontDrive.setDirection(DcMotorSimple.Direction.REVERSE);
+//        robot.rightBackDrive.setDirection(DcMotorSimple.Direction.REVERSE);
 //        robot.rightFrontDrive.setDirection(DcMotorSimple.Direction.REVERSE);
         waitForStart();
 //        autonomousThreadObject = new Thread(new autonomousThread(robot.leftFrontDrive, robot.rightFrontDrive, robot.leftBackDrive, robot.rightBackDrive));
 //        autonomousThreadObject.start();
-        double angleToTurn = 720;
+        double angleToTurn = 1000;
         double finalSteps = angleToTurn * motorStep / 360;
         robot.leftFrontDrive.setMode(DcMotorImplEx.RunMode.STOP_AND_RESET_ENCODER);
         robot.leftFrontDrive.setTargetPosition((int) finalSteps);
@@ -125,7 +127,6 @@ public class autonomous extends LinearOpMode {
         robot.rightBackDrive.setTargetPosition((int) finalSteps);
         robot.rightBackDrive.setMode(DcMotorImplEx.RunMode.RUN_TO_POSITION);
         robot.rightBackDrive.setPower(speed);
-
         while (opModeIsActive() && (robot.leftFrontDrive.isBusy() && robot.rightFrontDrive.isBusy() && robot.leftBackDrive.isBusy() && robot.rightBackDrive.isBusy())) {
         }
 

@@ -38,10 +38,10 @@ public class LiftingSystem extends Extension {
     private final int brick3tall = 1200;
     private final int brick4tall = 1504;
     private final int brick5tall = 1790;
-    private final int brick6tall = 2080;
+    private final int brick6tall = 1990;
     private final int avoidStructuralCollision = 650;
     private double startingHeight = -8;
-    private final int avoidGrabberCollision = 270;
+    private final int avoidGrabberCollision = 330;
     private double liftingMotorStep;
     private HardwareMap hardwareMap;
     private double liftedHeight = 0;
@@ -78,30 +78,10 @@ public class LiftingSystem extends Extension {
         this.grabber(Grabber.RELEASE);
     }
 
-    public LiftingSystem(HardwareMap hardwareMap, String liftingMotor, double maxLiftingSpeed, double accel, double liftingMotorStep) {
-
-        // Get hardwareMap to access components.
-        super(hardwareMap);
-        this.hardwareMap = hardwareMap;
-        this.liftingMotorStep = liftingMotorStep;
-        // Get motors and servos.
-        this.liftingMotor = super.get(DcMotorImplEx.class, liftingMotor);
-
-        // Configure motors and servos.
-        this.liftingMotor.setDirection(DcMotorSimple.Direction.FORWARD);
-        this.liftingMotor.setZeroPowerBehavior(DcMotorImplEx.ZeroPowerBehavior.BRAKE);
-        this.liftingMotor.setMode(DcMotorImplEx.RunMode.STOP_AND_RESET_ENCODER);
-
-
-        // Save metrics.
-        this.maxLiftingSpeed = maxLiftingSpeed;
-        this.accel = accel;
-    }
-
     public void goBricks(double speed, double bricks, int correctionFactor, int avoidGrabberCollisionFactor, LiftingSystem liftingSys, boolean brickCounts, boolean crossBarrier, boolean reverseDirection) {
         double finalAngle = 0;
         if (brickCounts) {
-            switch (Math.abs((int)bricks)) {
+            switch (Math.abs((int) bricks)) {
                 case 0:
                     finalAngle = brick0tall;
                     break;
@@ -132,7 +112,6 @@ public class LiftingSystem extends Extension {
         finalAngle += avoidGrabberCollision * avoidGrabberCollisionFactor;
         if (bricks < 2 && bricks >= 0 && crossBarrier) {
             raisingMotor.turn(speed, avoidStructuralCollision, true);
-            while (liftingMotor.isBusy()) {}
             liftingSys.swingWrist(Direction.OUT);
             try {
                 sleep(600);
@@ -222,6 +201,19 @@ public class LiftingSystem extends Extension {
 
         newSpeed = clip(newSpeed, -this.maxLiftingSpeed, this.maxLiftingSpeed);
         motor.setPower(newSpeed);
+    }
+
+    public DcMotorImplEx getLiftingMotor() {
+        return liftingMotor;
+    }
+
+    public void retractWire(){
+        this.liftingMotor.setPower(0.1);
+        try {
+            sleep(5000);
+        } catch (InterruptedException e) {
+        }
+        this.liftingMotor.setPower(0);
     }
 
     public Servo getWristServo() {

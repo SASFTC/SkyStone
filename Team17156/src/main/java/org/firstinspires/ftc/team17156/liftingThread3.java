@@ -10,7 +10,8 @@ public class liftingThread3 implements Runnable {
     private IntakeServo intakeServo;
     private double bricks;
     private Thread liftingThread;
-    public liftingThread3(LiftingSystem liftingSys, IntakeServo intakeServo, double bricks){
+
+    public liftingThread3(LiftingSystem liftingSys, IntakeServo intakeServo, double bricks) {
         this.liftingSys = liftingSys;
         this.intakeServo = intakeServo;
         this.bricks = bricks;
@@ -26,13 +27,17 @@ public class liftingThread3 implements Runnable {
     public void run() {
         this.liftingSys.goBricks(1.0, 0, -1, 0, liftingSys, false, false, false);
         this.liftingSys.grabber(LiftingSystem.Grabber.RELEASE);
-        try{sleep(500);}
-        catch (InterruptedException e){}
+        try {
+            sleep(500);
+        } catch (InterruptedException e) {
+        }
         this.liftingSys.goBricks(1.0, 0, 0, 1, liftingSys, false, false, false);
         this.liftingSys.swingWrist(LiftingSystem.Direction.IN);
-        try{sleep(500);}
-        catch (InterruptedException e){}
-        this.liftingSys.goBricks(0.4, (int)bricks, 0, -1, liftingSys, true, false, true);
-
+        try {
+            sleep(500);
+        } catch (InterruptedException e) {
+        }
+        this.liftingSys.goBricks(0.4, (int) bricks, 0, -1, liftingSys, true, false, true);
+        this.liftingSys.retractWire();
     }
 }

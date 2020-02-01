@@ -55,6 +55,9 @@ public class Main_Testing_Op extends OpMode {
     private int intakeDirection = 0;
     private boolean isStickClickReleased = true;
     private int phase = 0;
+    private boolean isASwang = false;
+    private boolean isBSwang = false;
+    private boolean isCapsoneDelivered = false;
 
     /*
      * Code to run ONCE when the driver hits INIT
@@ -162,13 +165,13 @@ public class Main_Testing_Op extends OpMode {
             intake.run(Intake.Direction.OUT);
         else if (intakeDirection == -1)
             intake.run(Intake.Direction.IN);
-        if (isPressed(gamepad2.right_trigger)){
-            sideLifting.setPower(1);
-        } else if (isPressed(gamepad2.left_trigger)){
-            sideLifting.setPower(-1);
-        } else {
-            sideLifting.setPower(0);
-        }
+//        if (isPressed(gamepad2.right_trigger)){
+//            sideLifting.setPower(1);
+//        } else if (isPressed(gamepad2.left_trigger)){
+//            sideLifting.setPower(-1);
+//        } else {
+//            sideLifting.setPower(0);
+//        }
 ////        telemetry.addData("pos", angleMotor.getMotorPosition());
 ////        telemetry.addData("position", Double.toString(liftingSys.getMotorPosition()));
 //        if (isPressed(gamepad2.right_trigger) && !isPressed(gamepad2.left_trigger)) {
@@ -239,6 +242,12 @@ public class Main_Testing_Op extends OpMode {
         } else if (!gamepad2.right_stick_button){
             isStickClickReleased = true;
         }
+//        if (gamepad2.dpad_up)
+//            this.liftingSys.getLiftingMotor().setPower(0.1);
+//        else if (gamepad2.dpad_down)
+//            this.liftingSys.getLiftingMotor().setPower(-0.1);
+//        else
+//            this.liftingSys.getLiftingMotor().setPower(0);
 //        if (gamepad2.y) {
 //            intakeServo.run();
 //        }
@@ -249,11 +258,45 @@ public class Main_Testing_Op extends OpMode {
         } else {
             machanumDrive.driveJoystick(gamepad1.left_stick_x, gamepad1.left_stick_y, gamepad1.right_stick_x, speedFactor, rotationFactor);
         }
-        if (gamepad2.y){
-            foundationHolder.run(FoundationHolder.State.GRASP);
-        } else if (gamepad2.a){
-            foundationHolder.run(FoundationHolder.State.DEFAULT);
-        }
+//        if (gamepad2.y){
+//            foundationHolder.run(FoundationHolder.State.GRASP);
+//        } else if (gamepad2.a){
+//            foundationHolder.run(FoundationHolder.State.DEFAULT);
+//        }
+//        if (isPressed(gamepad2.right_trigger)){
+//            liftingSys.getLiftingMotor().setPower(0.7);
+//        } else if (isPressed(gamepad2.left_trigger))
+//            liftingSys.getLiftingMotor().setPower(-0.7);
+//        else if (gamepad2.right_bumper) {
+//            liftingSys.getLiftingMotor().setPower(0.3);
+//        } else if (gamepad2.left_bumper){
+//            liftingSys.getLiftingMotor().setPower(-0.3);
+//        }
+//        else
+//            liftingSys.getLiftingMotor().setPower(0);
+//
+//        if (gamepad2.x){
+//            intakeServo.run();
+//            liftingSys.grabber(LiftingSystem.Grabber.GRAB);
+//        }
+//
+//        if (gamepad2.a){
+//            if (isASwang){
+//                liftingSys.swingWrist(LiftingSystem.Direction.IN);
+//            } else
+//                liftingSys.swingWrist(LiftingSystem.Direction.OUT);
+//            isASwang = !isASwang;
+//        }
+//        if (gamepad2.b){
+//            if (isBSwang){
+//                liftingSys.grabber(LiftingSystem.Grabber.GRAB);
+//            } else
+//                liftingSys.grabber(LiftingSystem.Grabber.RELEASE);
+//            isBSwang = !isBSwang;
+//        }
+
+
+
 
         addedValue = 0;
         if (isSwang(gamepad2.right_stick_y) == 1 && assignedBricks < maxBricks && isStickReleased) {
@@ -274,15 +317,17 @@ public class Main_Testing_Op extends OpMode {
         telemetry.update();
 //
 //
-//        if (gamepad2.b) {
-//            capstoneServo.run(CapstoneServo.Direction.PUT);
-//        }
-//        if (gamepad2.a) {
-//            capstoneServo.run(CapstoneServo.Direction.HOLD);
-//        }
+        if (gamepad2.a && !isCapsoneDelivered) {
+            capstoneServo.run();
+        }
 
-
+        if (gamepad1.dpad_up){
+            foundationHolder.run(FoundationHolder.State.DEFAULT);
+        } else if (gamepad1.dpad_down){
+            foundationHolder.run(FoundationHolder.State.GRASP);
+        }
     }
+
 
 
     /*

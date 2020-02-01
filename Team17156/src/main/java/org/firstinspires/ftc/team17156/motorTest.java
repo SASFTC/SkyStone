@@ -59,7 +59,7 @@ public class motorTest extends OpMode {
 
         telemetry.addData("Status", "Initialized");
 
-        testingMotor = hardwareMap.get(DcMotorImplEx.class, "lifting_motor");
+        testingMotor = hardwareMap.get(DcMotorImplEx.class, "side_lifting_motor");
         angleMotor = new TurnAngle(hardwareMap, this.testingMotor, 1, 100, 537.6);
 
 
